@@ -1,4 +1,4 @@
-import { Building2, Menu, User, LogOut, Settings } from 'lucide-react';
+import { Building2, User, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,14 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/lib/auth-context';
 import { Link } from 'react-router-dom';
 
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
-
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header() {
   const { userProfile, organization, signOut } = useAuth();
 
   const getOrgTypeLabel = (type: string) => {
@@ -48,13 +45,9 @@ export function Header({ onMenuClick }: HeaderProps) {
   return (
     <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 lg:px-6">
       <div className="flex items-center gap-4">
-        {onMenuClick && (
-          <Button variant="ghost" size="icon" onClick={onMenuClick} className="lg:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
-        )}
+        <SidebarTrigger />
         
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
             <Building2 className="h-5 w-5 text-white" />
           </div>

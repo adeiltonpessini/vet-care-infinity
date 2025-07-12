@@ -4,10 +4,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
-import { Header } from "@/components/layout/Header";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import SetupOrganization from "./pages/SetupOrganization";
+import Animals from "./pages/Animals";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,10 +33,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>{children}</main>
-    </div>
+    <DashboardLayout>
+      {children}
+    </DashboardLayout>
   );
 }
 
@@ -80,6 +81,16 @@ const App = () => (
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/setup-organization" element={
+              <ProtectedRoute>
+                <SetupOrganization />
+              </ProtectedRoute>
+            } />
+            <Route path="/animals" element={
+              <ProtectedRoute>
+                <Animals />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
