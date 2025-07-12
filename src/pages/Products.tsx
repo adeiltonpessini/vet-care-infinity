@@ -30,7 +30,7 @@ interface Product {
   composicao?: string;
   modo_uso?: string;
   preco_kg?: number;
-  especie_alvo?: string[];
+  especie_alvo?: ('canino' | 'felino' | 'bovino' | 'suino' | 'equino' | 'ovino' | 'caprino' | 'aves' | 'outros')[];
   fase_alvo?: string[];
   imagem_url?: string;
   created_at: string;
@@ -53,7 +53,7 @@ export default function Products() {
     composicao: '',
     modo_uso: '',
     preco_kg: '',
-    especie_alvo: [] as string[],
+    especie_alvo: [] as ('canino' | 'felino' | 'bovino' | 'suino' | 'equino' | 'ovino' | 'caprino' | 'aves' | 'outros')[],
     fase_alvo: [] as string[],
   });
 
@@ -176,14 +176,14 @@ export default function Products() {
   };
 
   const getTipoBadgeVariant = (tipo: string): "default" | "destructive" | "secondary" | "outline" => {
-    const variants = {
+    const variants: Record<string, "default" | "destructive" | "secondary" | "outline"> = {
       racao: 'default',
       suplemento: 'secondary',
       medicamento: 'destructive',
       vacina: 'outline',
       equipamento: 'secondary'
     };
-    return variants[tipo as keyof typeof variants] || 'default';
+    return variants[tipo] || 'default';
   };
 
   const filteredProducts = products.filter(product => {
