@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import SetupOrganization from "./pages/SetupOrganization";
 import Animals from "./pages/Animals";
+import NewAnimal from "./pages/NewAnimal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -91,6 +92,11 @@ const App = () => (
             <Route path="/animals" element={
               <ProtectedRoute>
                 <Animals />
+              </ProtectedRoute>
+            } />
+            <Route path="/animals/new" element={
+              <ProtectedRoute>
+                <NewAnimal />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
