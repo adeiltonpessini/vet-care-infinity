@@ -46,7 +46,7 @@ export function AppSidebar() {
     if (!organization) return [];
 
     switch (organization.type) {
-      case 'clinica':
+      case 'clinica_veterinaria':
         return [
           { title: 'Animais', url: '/animals', icon: PawPrint },
           { title: 'Diagnósticos', url: '/diagnostics', icon: Stethoscope },
@@ -56,7 +56,8 @@ export function AppSidebar() {
           { title: 'Equipe', url: '/team', icon: Users },
           { title: 'Relatórios', url: '/reports', icon: BarChart3 },
         ];
-      case 'empresa':
+      case 'empresa_alimentos':
+      case 'empresa_medicamentos':
         return [
           { title: 'Produtos', url: '/products', icon: Package },
           { title: 'Indicações', url: '/indicators', icon: TrendingUp },
@@ -106,8 +107,9 @@ export function AppSidebar() {
         {organization && orgItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>
-              {organization.type === 'clinica' && 'Clínica'}
-              {organization.type === 'empresa' && 'Empresa'}
+              {organization.type === 'clinica_veterinaria' && 'Clínica Veterinária'}
+              {organization.type === 'empresa_alimentos' && 'Empresa de Alimentos'}
+              {organization.type === 'empresa_medicamentos' && 'Empresa de Medicamentos'}
               {organization.type === 'fazenda' && 'Fazenda'}
             </SidebarGroupLabel>
             <SidebarGroupContent>

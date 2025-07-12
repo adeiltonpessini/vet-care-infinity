@@ -6,7 +6,7 @@ interface UserProfile {
   id: string;
   auth_user_id: string;
   org_id: string | null;
-  role: 'superadmin' | 'admin' | 'vet' | 'empresa' | 'fazendeiro' | 'colaborador';
+  role: 'superadmin' | 'admin' | 'veterinario' | 'colaborador' | 'vendedor' | 'gerente_produto';
   nome: string;
   email: string;
   telefone?: string;
@@ -15,7 +15,7 @@ interface UserProfile {
 interface Organization {
   id: string;
   name: string;
-  type: 'clinica' | 'empresa' | 'fazenda';
+  type: 'clinica_veterinaria' | 'empresa_alimentos' | 'empresa_medicamentos' | 'fazenda';
   plano: 'free' | 'pro' | 'enterprise';
   limite_animais: number;
   limite_funcionarios: number;

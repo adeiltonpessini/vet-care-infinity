@@ -55,9 +55,10 @@ export default function Dashboard() {
 
   const getOrgIcon = () => {
     switch (organization.type) {
-      case 'clinica':
+      case 'clinica_veterinaria':
         return <Stethoscope className="h-6 w-6" />;
-      case 'empresa':
+      case 'empresa_alimentos':
+      case 'empresa_medicamentos':
         return <Factory className="h-6 w-6" />;
       case 'fazenda':
         return <Wheat className="h-6 w-6" />;
@@ -68,13 +69,14 @@ export default function Dashboard() {
 
   const getQuickActions = () => {
     switch (organization.type) {
-      case 'clinica':
+      case 'clinica_veterinaria':
         return [
           { label: 'Novo Animal', href: '/animals/new', icon: PawPrint },
           { label: 'Nova Receita', href: '/prescriptions/new', icon: Plus },
           { label: 'Diagnóstico', href: '/diagnostics/new', icon: Stethoscope },
         ];
-      case 'empresa':
+      case 'empresa_alimentos':
+      case 'empresa_medicamentos':
         return [
           { label: 'Novo Produto', href: '/products/new', icon: Package },
           { label: 'Ver Indicações', href: '/indicators', icon: TrendingUp },
@@ -143,14 +145,14 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              {organization.type === 'empresa' ? 'Produtos' : 'Estoque'}
+              {(organization.type === 'empresa_alimentos' || organization.type === 'empresa_medicamentos') ? 'Produtos' : 'Estoque'}
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-muted-foreground">
-              {organization.type === 'empresa' 
+              {(organization.type === 'empresa_alimentos' || organization.type === 'empresa_medicamentos')
                 ? `Limite: ${organization.limite_produtos}`
                 : 'Itens em estoque'
               }

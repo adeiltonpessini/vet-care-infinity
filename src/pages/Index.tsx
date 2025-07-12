@@ -10,7 +10,8 @@ import {
   ArrowRight,
   Users,
   BarChart3,
-  Shield
+  Shield,
+  Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -45,7 +46,7 @@ const Index = () => {
             sustentável e sem limites
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
-            Plataforma SaaS completa para veterinários, empresas do agronegócio e fazendas. 
+            Plataforma SaaS completa para veterinários, empresas de alimentos/medicamentos e fazendas. 
             Gerencie animais, produtos e operações com tecnologia de ponta.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -88,7 +89,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Clínicas */}
             <Card className="border-2 hover:border-primary/50 transition-colors">
               <CardHeader className="text-center pb-4">
@@ -129,38 +130,78 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Empresas */}
+            {/* Empresas de Alimentos */}
             <Card className="border-2 hover:border-primary/50 transition-colors">
               <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Factory className="h-8 w-8 text-secondary" />
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Factory className="h-8 w-8 text-green-600" />
                 </div>
-                <CardTitle className="text-2xl">Empresas do Agro</CardTitle>
+                <CardTitle className="text-2xl">Empresas de Alimentos</CardTitle>
                 <CardDescription className="text-base">
-                  Rastreamento e métricas de produtos
+                  Produção de rações e suplementos
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">Catálogo de produtos</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Controle de fórmulas</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">Métricas de indicação</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Gestão nutricional</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">Relatórios regionais</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Qualidade dos produtos</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">Análise de mercado</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Indicações técnicas</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">Dashboard executivo</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-sm">Relatórios de performance</span>
+                  </div>
+                </div>
+                <Button className="w-full" variant="outline">
+                  Saiba Mais
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Empresas de Medicamentos */}
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Activity className="h-8 w-8 text-purple-600" />
+                </div>
+                <CardTitle className="text-2xl">Empresas de Medicamentos</CardTitle>
+                <CardDescription className="text-base">
+                  Medicamentos e produtos veterinários
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm">Controle farmacêutico</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm">Gestão de vacinas</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm">Protocolos de uso</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm">Rastreabilidade completa</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm">Análise de eficácia</span>
                   </div>
                 </div>
                 <Button className="w-full" variant="outline">

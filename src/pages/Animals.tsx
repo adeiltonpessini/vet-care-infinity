@@ -180,7 +180,7 @@ function Animals() {
         <div>
           <h1 className="text-3xl font-bold">Animais</h1>
           <p className="text-muted-foreground">
-            Gerencie os animais da sua {organization.type === 'clinica' ? 'clínica' : 'fazenda'}
+            Gerencie os animais da sua {organization.type === 'clinica_veterinaria' ? 'clínica' : organization.type === 'fazenda' ? 'fazenda' : 'empresa'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -308,7 +308,7 @@ function Animals() {
                   <TableRow>
                     <TableHead>Animal</TableHead>
                     <TableHead>Espécie</TableHead>
-                    {organization.type === 'clinica' && (
+                    {organization.type === 'clinica_veterinaria' && (
                       <>
                         <TableHead>Tutor</TableHead>
                         <TableHead>CPF</TableHead>
@@ -339,7 +339,7 @@ function Animals() {
                           {animal.especie}
                         </Badge>
                       </TableCell>
-                      {organization.type === 'clinica' && (
+                      {organization.type === 'clinica_veterinaria' && (
                         <>
                           <TableCell>
                             <div>{animal.nome_tutor || '-'}</div>

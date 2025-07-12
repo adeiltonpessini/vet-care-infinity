@@ -748,13 +748,6 @@ export type Database = {
       user_role:
         | "superadmin"
         | "admin"
-        | "vet"
-        | "empresa"
-        | "fazendeiro"
-        | "colaborador"
-      user_role_new:
-        | "superadmin"
-        | "admin"
         | "veterinario"
         | "colaborador"
         | "vendedor"
@@ -921,14 +914,6 @@ export const Constants = {
         "equipamento",
       ],
       user_role: [
-        "superadmin",
-        "admin",
-        "vet",
-        "empresa",
-        "fazendeiro",
-        "colaborador",
-      ],
-      user_role_new: [
         "superadmin",
         "admin",
         "veterinario",

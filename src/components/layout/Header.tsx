@@ -18,10 +18,12 @@ export function Header() {
 
   const getOrgTypeLabel = (type: string) => {
     switch (type) {
-      case 'clinica':
-        return 'Clínica';
-      case 'empresa':
-        return 'Empresa';
+      case 'clinica_veterinaria':
+        return 'Clínica Veterinária';
+      case 'empresa_alimentos':
+        return 'Empresa de Alimentos';
+      case 'empresa_medicamentos':
+        return 'Empresa de Medicamentos';
       case 'fazenda':
         return 'Fazenda';
       default:

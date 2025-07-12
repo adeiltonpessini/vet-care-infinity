@@ -40,8 +40,8 @@ export default function NewAnimal() {
         raca: formData.get('raca') as string || null,
         peso: formData.get('peso') ? parseFloat(formData.get('peso') as string) : null,
         data_nascimento: birthDate ? format(birthDate, 'yyyy-MM-dd') : null,
-        cpf_tutor: organization?.type === 'clinica' ? formData.get('cpf_tutor') as string : null,
-        nome_tutor: organization?.type === 'clinica' ? formData.get('nome_tutor') as string : null,
+        cpf_tutor: organization?.type === 'clinica_veterinaria' ? formData.get('cpf_tutor') as string : null,
+        nome_tutor: organization?.type === 'clinica_veterinaria' ? formData.get('nome_tutor') as string : null,
         lote_id: organization?.type === 'fazenda' ? formData.get('lote_id') as string || null : null,
         observacoes: formData.get('observacoes') as string || null,
       };
@@ -95,7 +95,7 @@ export default function NewAnimal() {
               Novo Animal
             </h1>
             <p className="text-muted-foreground">
-              Adicione um novo animal à sua {organization.type === 'clinica' ? 'clínica' : 'fazenda'}
+              Adicione um novo animal à sua {organization.type === 'clinica_veterinaria' ? 'clínica' : organization.type === 'fazenda' ? 'fazenda' : 'empresa'}
             </p>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function NewAnimal() {
               </div>
 
               {/* Campos específicos por tipo de organização */}
-              {organization.type === 'clinica' && (
+              {organization.type === 'clinica_veterinaria' && (
                 <div className="bg-gradient-to-r from-primary/5 to-secondary/5 p-6 rounded-lg border border-primary/20">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     👨‍⚕️ Informações do Tutor
