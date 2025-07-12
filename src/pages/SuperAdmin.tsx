@@ -41,7 +41,7 @@ interface DashboardStats {
 }
 
 export default function SuperAdmin() {
-  const { userProfile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
@@ -53,15 +53,18 @@ export default function SuperAdmin() {
   });
   const [loading, setLoading] = useState(true);
 
-  // Verificar se é superadmin
+  // Verificar se é superadmin usando email direto do user
   useEffect(() => {
-    if (!userProfile) return;
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
     
-    if (userProfile.email !== 'adeilton.ata@gmail.com') {
+    if (user.email !== 'adeilton.ata@gmail.com') {
       navigate('/dashboard');
       return;
     }
-  }, [userProfile, navigate]);
+  }, [user, navigate]);
 
   const loadDashboardStats = async () => {
     setLoading(true);
@@ -107,12 +110,12 @@ export default function SuperAdmin() {
   };
 
   useEffect(() => {
-    if (userProfile?.email === 'adeilton.ata@gmail.com') {
+    if (user?.email === 'adeilton.ata@gmail.com') {
       loadDashboardStats();
     }
-  }, [userProfile]);
+  }, [user]);
 
-  if (!userProfile || userProfile.email !== 'adeilton.ata@gmail.com') {
+  if (!user || user.email !== 'adeilton.ata@gmail.com') {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md">
