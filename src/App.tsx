@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { GlobalConfigProvider } from '@/hooks/useGlobalConfig';
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -11,6 +12,7 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Animals from "./pages/Animals";
 import NewAnimal from "./pages/NewAnimal";
+import SuperAdmin from "./pages/SuperAdmin";
 
 // Admin pages
 import AdminOrganizations from "./pages/admin/AdminOrganizations";
@@ -55,11 +57,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/auth" replace />;
   }
   
-  return (
-    <DashboardLayout>
-      {children}
-    </DashboardLayout>
-  );
+  return <DashboardLayout>{children}</DashboardLayout>;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
@@ -84,139 +82,137 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 }
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={
-              <PublicRoute>
-                <Index />
-              </PublicRoute>
-            } />
-            <Route path="/auth" element={
-              <PublicRoute>
-                <Auth />
-              </PublicRoute>
-            } />
-            <Route path="/onboarding" element={
-              <PublicRoute>
-                <Onboarding />
-              </PublicRoute>
-            } />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/animals" element={
-              <ProtectedRoute>
-                <Animals />
-              </ProtectedRoute>
-            } />
-            <Route path="/animals/new" element={
-              <ProtectedRoute>
-                <NewAnimal />
-              </ProtectedRoute>
-            } />
-            {/* Admin routes */}
-            <Route path="/admin/organizations" element={
-              <ProtectedRoute>
-                <AdminOrganizations />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/users" element={
-              <ProtectedRoute>
-                <AdminUsers />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/analytics" element={
-              <ProtectedRoute>
-                <AdminAnalytics />
-              </ProtectedRoute>
-            } />
-            
-            {/* Organization specific routes */}
-            <Route path="/products" element={
-              <ProtectedRoute>
-                <Products />
-              </ProtectedRoute>
-            } />
-            <Route path="/inventory" element={
-              <ProtectedRoute>
-                <Inventory />
-              </ProtectedRoute>
-            } />
-            <Route path="/team" element={
-              <ProtectedRoute>
-                <Team />
-              </ProtectedRoute>
-            } />
-            <Route path="/reports" element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            } />
-            <Route path="/lotes" element={
-              <ProtectedRoute>
-                <Lotes />
-              </ProtectedRoute>
-            } />
-            <Route path="/vaccinations" element={
-              <ProtectedRoute>
-                <Vaccinations />
-              </ProtectedRoute>
-            } />
-            <Route path="/events" element={
-              <ProtectedRoute>
-                <Events />
-              </ProtectedRoute>
-            } />
-            <Route path="/diagnostics" element={
-              <ProtectedRoute>
-                <Diagnostics />
-              </ProtectedRoute>
-            } />
-            <Route path="/prescriptions" element={
-              <ProtectedRoute>
-                <Prescriptions />
-              </ProtectedRoute>
-            } />
-            <Route path="/formulas" element={
-              <ProtectedRoute>
-                <Formulas />
-              </ProtectedRoute>
-            } />
-            <Route path="/indicators" element={
-              <ProtectedRoute>
-                <Indicators />
-              </ProtectedRoute>
-            } />
-            <Route path="/metrics" element={
-              <ProtectedRoute>
-                <Metrics />
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
-            <Route path="/help" element={
-              <ProtectedRoute>
-                <Help />
-              </ProtectedRoute>
-            } />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <GlobalConfigProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={
+                <PublicRoute>
+                  <Index />
+                </PublicRoute>
+              } />
+              <Route path="/auth" element={
+                <PublicRoute>
+                  <Auth />
+                </PublicRoute>
+              } />
+              <Route path="/onboarding" element={
+                <PublicRoute>
+                  <Onboarding />
+                </PublicRoute>
+              } />
+              <Route path="/superadmin" element={<SuperAdmin />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/animals" element={
+                <ProtectedRoute>
+                  <Animals />
+                </ProtectedRoute>
+              } />
+              <Route path="/animals/new" element={
+                <ProtectedRoute>
+                  <NewAnimal />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/organizations" element={
+                <ProtectedRoute>
+                  <AdminOrganizations />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/users" element={
+                <ProtectedRoute>
+                  <AdminUsers />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/analytics" element={
+                <ProtectedRoute>
+                  <AdminAnalytics />
+                </ProtectedRoute>
+              } />
+              <Route path="/products" element={
+                <ProtectedRoute>
+                  <Products />
+                </ProtectedRoute>
+              } />
+              <Route path="/inventory" element={
+                <ProtectedRoute>
+                  <Inventory />
+                </ProtectedRoute>
+              } />
+              <Route path="/team" element={
+                <ProtectedRoute>
+                  <Team />
+                </ProtectedRoute>
+              } />
+              <Route path="/reports" element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              } />
+              <Route path="/lotes" element={
+                <ProtectedRoute>
+                  <Lotes />
+                </ProtectedRoute>
+              } />
+              <Route path="/vaccinations" element={
+                <ProtectedRoute>
+                  <Vaccinations />
+                </ProtectedRoute>
+              } />
+              <Route path="/events" element={
+                <ProtectedRoute>
+                  <Events />
+                </ProtectedRoute>
+              } />
+              <Route path="/diagnostics" element={
+                <ProtectedRoute>
+                  <Diagnostics />
+                </ProtectedRoute>
+              } />
+              <Route path="/prescriptions" element={
+                <ProtectedRoute>
+                  <Prescriptions />
+                </ProtectedRoute>
+              } />
+              <Route path="/formulas" element={
+                <ProtectedRoute>
+                  <Formulas />
+                </ProtectedRoute>
+              } />
+              <Route path="/indicators" element={
+                <ProtectedRoute>
+                  <Indicators />
+                </ProtectedRoute>
+              } />
+              <Route path="/metrics" element={
+                <ProtectedRoute>
+                  <Metrics />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/help" element={
+                <ProtectedRoute>
+                  <Help />
+                </ProtectedRoute>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </GlobalConfigProvider>
 );
 
 export default App;

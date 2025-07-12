@@ -248,6 +248,45 @@ export type Database = {
           },
         ]
       }
+      external_integrations: {
+        Row: {
+          api_key: string | null
+          config: Json | null
+          created_at: string
+          endpoint_url: string | null
+          id: string
+          last_sync: string | null
+          name: string
+          status: boolean | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string | null
+          config?: Json | null
+          created_at?: string
+          endpoint_url?: string | null
+          id?: string
+          last_sync?: string | null
+          name: string
+          status?: boolean | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string | null
+          config?: Json | null
+          created_at?: string
+          endpoint_url?: string | null
+          id?: string
+          last_sync?: string | null
+          name?: string
+          status?: boolean | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       formulas: {
         Row: {
           created_at: string
@@ -282,6 +321,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      global_config: {
+        Row: {
+          app_slogan: string | null
+          app_title: string | null
+          background_color: string | null
+          created_at: string
+          favicon_url: string | null
+          font: string | null
+          id: string
+          layout_mode: string | null
+          logo_url: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          app_slogan?: string | null
+          app_title?: string | null
+          background_color?: string | null
+          created_at?: string
+          favicon_url?: string | null
+          font?: string | null
+          id?: string
+          layout_mode?: string | null
+          logo_url?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          app_slogan?: string | null
+          app_title?: string | null
+          background_color?: string | null
+          created_at?: string
+          favicon_url?: string | null
+          font?: string | null
+          id?: string
+          layout_mode?: string | null
+          logo_url?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       indicacoes_produto: {
         Row: {
@@ -598,6 +685,42 @@ export type Database = {
           },
         ]
       }
+      superadmin_logs: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          target_id: string | null
+          target_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          target_id?: string | null
+          target_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          target_id?: string | null
+          target_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           auth_user_id: string | null
@@ -712,6 +835,20 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["user_role"]
+      }
+      is_superadmin: {
+        Args: { user_email: string }
+        Returns: boolean
+      }
+      log_superadmin_action: {
+        Args: {
+          admin_user_id: string
+          action: string
+          target_type: string
+          target_id?: string
+          details?: Json
+        }
+        Returns: string
       }
     }
     Enums: {
