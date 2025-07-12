@@ -9,9 +9,30 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
-
 import Animals from "./pages/Animals";
 import NewAnimal from "./pages/NewAnimal";
+
+// Admin pages
+import AdminOrganizations from "./pages/admin/AdminOrganizations";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+
+// Organization specific pages
+import Products from "./pages/Products";
+import Inventory from "./pages/Inventory";
+import Team from "./pages/Team";
+import Reports from "./pages/Reports";
+import Lotes from "./pages/Lotes";
+import Vaccinations from "./pages/Vaccinations";
+import Events from "./pages/Events";
+import Diagnostics from "./pages/Diagnostics";
+import Prescriptions from "./pages/Prescriptions";
+import Formulas from "./pages/Formulas";
+import Indicators from "./pages/Indicators";
+import Metrics from "./pages/Metrics";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -100,6 +121,95 @@ const App = () => (
                 <NewAnimal />
               </ProtectedRoute>
             } />
+            {/* Admin routes */}
+            <Route path="/admin/organizations" element={
+              <ProtectedRoute>
+                <AdminOrganizations />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/users" element={
+              <ProtectedRoute>
+                <AdminUsers />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/analytics" element={
+              <ProtectedRoute>
+                <AdminAnalytics />
+              </ProtectedRoute>
+            } />
+            
+            {/* Organization specific routes */}
+            <Route path="/products" element={
+              <ProtectedRoute>
+                <Products />
+              </ProtectedRoute>
+            } />
+            <Route path="/inventory" element={
+              <ProtectedRoute>
+                <Inventory />
+              </ProtectedRoute>
+            } />
+            <Route path="/team" element={
+              <ProtectedRoute>
+                <Team />
+              </ProtectedRoute>
+            } />
+            <Route path="/reports" element={
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            } />
+            <Route path="/lotes" element={
+              <ProtectedRoute>
+                <Lotes />
+              </ProtectedRoute>
+            } />
+            <Route path="/vaccinations" element={
+              <ProtectedRoute>
+                <Vaccinations />
+              </ProtectedRoute>
+            } />
+            <Route path="/events" element={
+              <ProtectedRoute>
+                <Events />
+              </ProtectedRoute>
+            } />
+            <Route path="/diagnostics" element={
+              <ProtectedRoute>
+                <Diagnostics />
+              </ProtectedRoute>
+            } />
+            <Route path="/prescriptions" element={
+              <ProtectedRoute>
+                <Prescriptions />
+              </ProtectedRoute>
+            } />
+            <Route path="/formulas" element={
+              <ProtectedRoute>
+                <Formulas />
+              </ProtectedRoute>
+            } />
+            <Route path="/indicators" element={
+              <ProtectedRoute>
+                <Indicators />
+              </ProtectedRoute>
+            } />
+            <Route path="/metrics" element={
+              <ProtectedRoute>
+                <Metrics />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            } />
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <Help />
+              </ProtectedRoute>
+            } />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
