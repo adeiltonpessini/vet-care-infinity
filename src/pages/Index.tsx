@@ -31,7 +31,7 @@ const Index = () => {
               <Link to="/auth">Entrar</Link>
             </Button>
             <Button asChild>
-              <Link to="/auth">Começar Agora</Link>
+              <Link to="/onboarding">Começar Agora</Link>
             </Button>
           </div>
         </div>
@@ -50,7 +50,7 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild className="text-lg px-8">
-              <Link to="/auth">
+              <Link to="/onboarding">
                 Comece Gratuitamente
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

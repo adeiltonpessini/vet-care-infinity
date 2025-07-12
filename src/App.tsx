@@ -7,8 +7,9 @@ import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
-import SetupOrganization from "./pages/SetupOrganization";
+
 import Animals from "./pages/Animals";
 import NewAnimal from "./pages/NewAnimal";
 import NotFound from "./pages/NotFound";
@@ -79,14 +80,14 @@ const App = () => (
                 <Auth />
               </PublicRoute>
             } />
+            <Route path="/onboarding" element={
+              <PublicRoute>
+                <Onboarding />
+              </PublicRoute>
+            } />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/setup-organization" element={
-              <ProtectedRoute>
-                <SetupOrganization />
               </ProtectedRoute>
             } />
             <Route path="/animals" element={
