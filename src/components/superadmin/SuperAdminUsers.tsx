@@ -67,7 +67,7 @@ export default function SuperAdminUsers() {
     try {
       const { error } = await supabase
         .from('users')
-        .update({ role: newRole })
+        .update({ role: newRole as 'superadmin' | 'admin' | 'veterinario' | 'colaborador' | 'vendedor' | 'gerente_produto' })
         .eq('id', userId);
 
       if (error) {

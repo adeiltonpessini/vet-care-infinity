@@ -69,8 +69,8 @@ export default function SuperAdminOrganizations() {
         .from('organizations')
         .update({
           name: editingOrg.name,
-          type: editingOrg.type,
-          plano: editingOrg.plano,
+          type: editingOrg.type as 'clinica_veterinaria' | 'empresa_alimentos' | 'empresa_medicamentos' | 'fazenda',
+          plano: editingOrg.plano as 'free' | 'pro' | 'enterprise',
           limite_animais: editingOrg.limite_animais,
           limite_funcionarios: editingOrg.limite_funcionarios,
           limite_produtos: editingOrg.limite_produtos,

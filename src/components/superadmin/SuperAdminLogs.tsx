@@ -18,10 +18,6 @@ interface SuperAdminLog {
   ip_address?: string;
   user_agent?: string;
   created_at: string;
-  admin_user?: {
-    nome: string;
-    email: string;
-  };
 }
 
 export default function SuperAdminLogs() {
@@ -35,12 +31,10 @@ export default function SuperAdminLogs() {
   const loadLogs = async () => {
     setLoading(true);
     try {
+      // First get logs without join to avoid relation issues
       const { data, error } = await supabase
         .from('superadmin_logs')
-        .select(`
-          *,
-          admin_user:users(nome, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
 
@@ -110,8 +104,7 @@ export default function SuperAdminLogs() {
   const filteredLogs = logs.filter(log => {
     const matchesSearch = 
       log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (log.admin_user?.nome && log.admin_user.nome.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (log.admin_user?.email && log.admin_user.email.toLowerCase().includes(searchTerm.toLowerCase()));
+      log.admin_user_id.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesAction = filterAction === 'all' || log.action === filterAction;
     const matchesTargetType = filterTargetType === 'all' || log.target_type === filterTargetType;
@@ -210,16 +203,12 @@ export default function SuperAdminLogs() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {log.admin_user ? (
-                        <div>
-                          <div className="font-medium">{log.admin_user.nome}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {log.admin_user.email}
-                          </div>
+                      <div>
+                        <div className="font-medium">Admin User</div>
+                        <div className="text-sm text-muted-foreground">
+                          {log.admin_user_id.substring(0, 8)}...
                         </div>
-                      ) : (
-                        <span className="text-muted-foreground">Usuário desconhecido</span>
-                      )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={getActionBadgeVariant(log.action)}>

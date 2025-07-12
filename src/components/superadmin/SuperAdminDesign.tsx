@@ -41,7 +41,10 @@ export default function SuperAdminDesign() {
 
   const handleSaveChanges = async () => {
     try {
-      await updateConfig(formData);
+      await updateConfig({
+        ...formData,
+        layout_mode: formData.layout_mode as 'light' | 'dark' | 'auto'
+      });
       toast({
         title: "Sucesso",
         description: "Configurações de design atualizadas com sucesso",
@@ -60,22 +63,22 @@ export default function SuperAdminDesign() {
       return;
     }
 
-    const defaultConfig = {
+    const defaultConfigReset = {
       primary_color: '#1A73E8',
       secondary_color: '#6366f1',
       background_color: '#ffffff',
       font: 'Inter',
-      layout_mode: 'light' as const,
+      layout_mode: 'light' as 'light' | 'dark' | 'auto',
       app_title: 'InfinityVet',
       app_slogan: 'Gestão Veterinária Inteligente',
       logo_url: '',
       favicon_url: ''
     };
 
-    setFormData(defaultConfig);
+    setFormData(defaultConfigReset);
     
     try {
-      await updateConfig(defaultConfig);
+      await updateConfig(defaultConfigReset);
       toast({
         title: "Sucesso",
         description: "Configurações resetadas para o padrão",

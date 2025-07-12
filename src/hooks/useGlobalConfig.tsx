@@ -54,8 +54,12 @@ export function GlobalConfigProvider({ children }: { children: ReactNode }) {
       }
 
       if (data) {
-        setConfig(data);
-        applyTheme(data);
+        const typedData = {
+          ...data,
+          layout_mode: data.layout_mode as 'light' | 'dark' | 'auto'
+        };
+        setConfig(typedData);
+        applyTheme(typedData);
       } else {
         setConfig(defaultConfig);
       }
