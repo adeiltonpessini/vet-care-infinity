@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Building2, Stethoscope, Factory, Tractor, ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-type OrganizationType = 'clinica' | 'empresa' | 'fazenda';
+type OrganizationType = 'clinica_veterinaria' | 'empresa_alimentos' | 'empresa_medicamentos' | 'fazenda';
 type PlanoType = 'free' | 'pro' | 'enterprise';
 
 interface PlanoInfo {
@@ -55,9 +55,9 @@ export default function Onboarding() {
   const { toast } = useToast();
 
   // Dados do formulário
-  const [organizationType, setOrganizationType] = useState<OrganizationType>('clinica');
+  const [organizationType, setOrganizationType] = useState<OrganizationType>('clinica_veterinaria');
   const [organizationName, setOrganizationName] = useState('');
-  const [userRole, setUserRole] = useState<'admin' | 'vet' | 'colaborador'>('admin');
+  const [userRole, setUserRole] = useState<'admin' | 'veterinario' | 'colaborador'>('admin');
   const [selectedPlan, setSelectedPlan] = useState<PlanoType>('free');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -65,17 +65,23 @@ export default function Onboarding() {
 
   const getOrgTypeInfo = (type: OrganizationType) => {
     const info = {
-      clinica: {
+      clinica_veterinaria: {
         title: "Clínica Veterinária",
         description: "Gerencie consultas, pacientes e tratamentos veterinários",
         icon: Stethoscope,
         color: "text-emerald-600"
       },
-      empresa: {
-        title: "Empresa Alimentos/Medicamentos", 
-        description: "Controle produtos, fornecedores e vendas do agronegócio",
+      empresa_alimentos: {
+        title: "Empresa de Alimentos", 
+        description: "Controle produtos de nutrição animal e vendas",
         icon: Factory,
         color: "text-blue-600"
+      },
+      empresa_medicamentos: {
+        title: "Empresa de Medicamentos",
+        description: "Gerencie medicamentos e produtos veterinários",
+        icon: Factory,
+        color: "text-purple-600"
       },
       fazenda: {
         title: "Fazenda/Propriedade Rural",
@@ -212,7 +218,7 @@ export default function Onboarding() {
                 return null;
               })}
               
-              {(['clinica', 'empresa', 'fazenda'] as OrganizationType[]).map((type) => {
+              {(['clinica_veterinaria', 'empresa_alimentos', 'empresa_medicamentos', 'fazenda'] as OrganizationType[]).map((type) => {
                 const info = getOrgTypeInfo(type);
                 const Icon = info.icon;
                 return (
@@ -257,14 +263,14 @@ export default function Onboarding() {
 
               <div>
                 <Label htmlFor="userRole">Seu cargo na organização</Label>
-                <RadioGroup value={userRole} onValueChange={(value) => setUserRole(value as 'admin' | 'vet' | 'colaborador')}>
+                <RadioGroup value={userRole} onValueChange={(value) => setUserRole(value as 'admin' | 'veterinario' | 'colaborador')}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="admin" id="admin" />
                     <Label htmlFor="admin">Administrador/Proprietário</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="vet" id="vet" />
-                    <Label htmlFor="vet">Veterinário</Label>
+                    <RadioGroupItem value="veterinario" id="veterinario" />
+                    <Label htmlFor="veterinario">Veterinário</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="colaborador" id="colaborador" />
