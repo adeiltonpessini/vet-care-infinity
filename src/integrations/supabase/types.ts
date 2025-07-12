@@ -733,7 +733,11 @@ export type Database = {
         | "morte"
         | "vacinacao"
         | "tratamento"
-      organization_type: "clinica" | "empresa" | "fazenda"
+      organization_type:
+        | "clinica_veterinaria"
+        | "empresa_alimentos"
+        | "empresa_medicamentos"
+        | "fazenda"
       plano_type: "free" | "pro" | "enterprise"
       produto_tipo:
         | "racao"
@@ -748,6 +752,13 @@ export type Database = {
         | "empresa"
         | "fazendeiro"
         | "colaborador"
+      user_role_new:
+        | "superadmin"
+        | "admin"
+        | "veterinario"
+        | "colaborador"
+        | "vendedor"
+        | "gerente_produto"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -895,7 +906,12 @@ export const Constants = {
         "vacinacao",
         "tratamento",
       ],
-      organization_type: ["clinica", "empresa", "fazenda"],
+      organization_type: [
+        "clinica_veterinaria",
+        "empresa_alimentos",
+        "empresa_medicamentos",
+        "fazenda",
+      ],
       plano_type: ["free", "pro", "enterprise"],
       produto_tipo: [
         "racao",
@@ -911,6 +927,14 @@ export const Constants = {
         "empresa",
         "fazendeiro",
         "colaborador",
+      ],
+      user_role_new: [
+        "superadmin",
+        "admin",
+        "veterinario",
+        "colaborador",
+        "vendedor",
+        "gerente_produto",
       ],
     },
   },
