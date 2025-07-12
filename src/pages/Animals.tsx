@@ -30,7 +30,7 @@ interface Animal {
   };
 }
 
-export default function Animals() {
+function Animals() {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -399,3 +399,5 @@ export default function Animals() {
     </div>
   );
 }
+
+export default Animals;
