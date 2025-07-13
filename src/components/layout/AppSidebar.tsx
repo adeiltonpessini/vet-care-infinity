@@ -13,7 +13,14 @@ import {
   ClipboardList,
   Settings,
   HelpCircle,
-  Crown
+  Crown,
+  Building2,
+  Factory,
+  UserCheck,
+  Palette,
+  Banknote,
+  Plug,
+  FileSearch
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -33,7 +40,7 @@ import { useAuth } from '@/lib/auth-context';
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const { organization, userProfile } = useAuth();
+  const { organization, userProfile, user } = useAuth();
   
   const currentPath = location.pathname;
   const collapsed = state === 'collapsed';
@@ -48,32 +55,30 @@ export function AppSidebar() {
     switch (organization.type) {
       case 'clinica_veterinaria':
         return [
-          { title: 'Animais', url: '/animals', icon: PawPrint },
-          { title: 'Diagnósticos', url: '/diagnostics', icon: Stethoscope },
-          { title: 'Receitas', url: '/prescriptions', icon: FileText },
-          { title: 'Estoque', url: '/inventory', icon: Package },
-          { title: 'Fórmulas', url: '/formulas', icon: Activity },
-          { title: 'Equipe', url: '/team', icon: Users },
-          { title: 'Relatórios', url: '/reports', icon: BarChart3 },
+          { title: 'Animais', url: '/vet/animals', icon: PawPrint },
+          { title: 'Diagnósticos', url: '/vet/diagnostics', icon: Stethoscope },
+          { title: 'Receitas', url: '/vet/prescriptions', icon: FileText },
+          { title: 'Indicações', url: '/vet/indicators', icon: TrendingUp },
+          { title: 'Fórmulas', url: '/vet/formulas', icon: Activity },
+          { title: 'Estoque', url: '/vet/inventory', icon: Package },
+          { title: 'Equipe', url: '/vet/team', icon: Users },
         ];
       case 'empresa_alimentos':
       case 'empresa_medicamentos':
         return [
-          { title: 'Produtos', url: '/products', icon: Package },
-          { title: 'Indicações', url: '/indicators', icon: TrendingUp },
-          { title: 'Métricas', url: '/metrics', icon: BarChart3 },
-          { title: 'Equipe', url: '/team', icon: Users },
-          { title: 'Relatórios', url: '/reports', icon: FileText },
+          { title: 'Produtos', url: '/empresa/products', icon: Package },
+          { title: 'Indicações', url: '/empresa/indicators', icon: TrendingUp },
+          { title: 'Métricas', url: '/empresa/metrics', icon: BarChart3 },
+          { title: 'Equipe', url: '/empresa/team', icon: Users },
         ];
       case 'fazenda':
         return [
-          { title: 'Lotes', url: '/lotes', icon: Wheat },
-          { title: 'Animais', url: '/animals', icon: PawPrint },
-          { title: 'Vacinações', url: '/vaccinations', icon: CalendarDays },
-          { title: 'Eventos', url: '/events', icon: ClipboardList },
-          { title: 'Estoque', url: '/inventory', icon: Package },
-          { title: 'Equipe', url: '/team', icon: Users },
-          { title: 'Relatórios', url: '/reports', icon: BarChart3 },
+          { title: 'Lotes', url: '/fazenda/lotes', icon: Wheat },
+          { title: 'Animais', url: '/fazenda/animals', icon: PawPrint },
+          { title: 'Vacinações', url: '/fazenda/vaccinations', icon: CalendarDays },
+          { title: 'Eventos', url: '/fazenda/events', icon: ClipboardList },
+          { title: 'Estoque', url: '/fazenda/inventory', icon: Package },
+          { title: 'Equipe', url: '/fazenda/team', icon: Users },
         ];
       default:
         return [];
@@ -81,7 +86,7 @@ export function AppSidebar() {
   };
 
   const orgItems = getOrgSpecificItems();
-  const isSuperAdmin = userProfile?.role === 'superadmin';
+  const isSuperAdmin = user?.email === 'adeilton.ata@gmail.com';
 
   return (
     <Sidebar className={collapsed ? "w-14" : "w-60"} collapsible="icon">
@@ -145,15 +150,23 @@ export function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/admin/organizations" className={getNavCls}>
-                      <Users className="mr-2 h-4 w-4" />
+                    <NavLink to="/superadmin" className={getNavCls}>
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>Dashboard</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/superadmin/organizations" className={getNavCls}>
+                      <Building2 className="mr-2 h-4 w-4" />
                       {!collapsed && <span>Organizações</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/admin/users" className={getNavCls}>
+                    <NavLink to="/superadmin/users" className={getNavCls}>
                       <Users className="mr-2 h-4 w-4" />
                       {!collapsed && <span>Usuários</span>}
                     </NavLink>
@@ -161,9 +174,33 @@ export function AppSidebar() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/admin/analytics" className={getNavCls}>
-                      <BarChart3 className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>Analytics</span>}
+                    <NavLink to="/superadmin/plans" className={getNavCls}>
+                      <Banknote className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>Planos</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/superadmin/design" className={getNavCls}>
+                      <Palette className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>Design</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/superadmin/integrations" className={getNavCls}>
+                      <Plug className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>Integrações</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink to="/superadmin/logs" className={getNavCls}>
+                      <FileSearch className="mr-2 h-4 w-4" />
+                      {!collapsed && <span>Logs</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
