@@ -35,6 +35,25 @@ import Metrics from "./pages/Metrics";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 
+// Vet module
+import VetAnimals from '@/pages/vet/VetAnimals';
+import VetDiagnostics from '@/pages/vet/VetDiagnostics';
+import VetPrescriptions from '@/pages/vet/VetPrescriptions';
+import VetIndicators from '@/pages/vet/VetIndicators';
+import VetFormulas from '@/pages/vet/VetFormulas';
+import VetInventory from '@/pages/vet/VetInventory';
+import VetTeam from '@/pages/vet/VetTeam';
+
+// Empresa module
+import EmpresaDashboard from '@/pages/empresa/EmpresaDashboard';
+import EmpresaProducts from '@/pages/empresa/EmpresaProducts';
+import EmpresaTeam from '@/pages/empresa/EmpresaTeam';
+import EmpresaMetrics from '@/pages/empresa/EmpresaMetrics';
+
+// Fazenda module
+import FazendaDashboard from '@/pages/fazenda/FazendaDashboard';
+import FazendaLotes from '@/pages/fazenda/FazendaLotes';
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -206,6 +225,26 @@ const App = () => (
                   <Help />
                 </ProtectedRoute>
               } />
+
+              {/* Vet Routes */}
+              <Route path="/vet/animals" element={<ProtectedRoute><VetAnimals /></ProtectedRoute>} />
+              <Route path="/vet/diagnostics" element={<ProtectedRoute><VetDiagnostics /></ProtectedRoute>} />
+              <Route path="/vet/prescriptions" element={<ProtectedRoute><VetPrescriptions /></ProtectedRoute>} />
+              <Route path="/vet/indicators" element={<ProtectedRoute><VetIndicators /></ProtectedRoute>} />
+              <Route path="/vet/formulas" element={<ProtectedRoute><VetFormulas /></ProtectedRoute>} />
+              <Route path="/vet/inventory" element={<ProtectedRoute><VetInventory /></ProtectedRoute>} />
+              <Route path="/vet/team" element={<ProtectedRoute><VetTeam /></ProtectedRoute>} />
+
+              {/* Empresa Routes */}
+              <Route path="/empresa" element={<ProtectedRoute><EmpresaDashboard /></ProtectedRoute>} />
+              <Route path="/empresa/products" element={<ProtectedRoute><EmpresaProducts /></ProtectedRoute>} />
+              <Route path="/empresa/team" element={<ProtectedRoute><EmpresaTeam /></ProtectedRoute>} />
+              <Route path="/empresa/metrics" element={<ProtectedRoute><EmpresaMetrics /></ProtectedRoute>} />
+
+              {/* Fazenda Routes */}
+              <Route path="/fazenda" element={<ProtectedRoute><FazendaDashboard /></ProtectedRoute>} />
+              <Route path="/fazenda/lotes" element={<ProtectedRoute><FazendaLotes /></ProtectedRoute>} />
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
