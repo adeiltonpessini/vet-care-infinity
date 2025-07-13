@@ -1,8 +1,12 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertTriangle, Home, ArrowLeft } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error(
@@ -12,14 +16,35 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
+    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
+      <Card className="w-full max-w-md text-center shadow-strong">
+        <CardHeader>
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+              <AlertTriangle className="h-8 w-8 text-destructive" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl">Página não encontrada</CardTitle>
+          <CardDescription>
+            A página que você está procurando não existe ou foi movida.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Caminho tentado: <code className="bg-muted px-2 py-1 rounded">{location.pathname}</code>
+          </p>
+          <div className="flex flex-col gap-2">
+            <Button onClick={() => navigate(-1)} variant="outline" className="w-full">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+            <Button onClick={() => navigate('/dashboard')} className="w-full">
+              <Home className="w-4 h-4 mr-2" />
+              Ir para o Dashboard
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

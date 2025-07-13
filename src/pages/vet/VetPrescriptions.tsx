@@ -12,6 +12,7 @@ import { FileText, Plus, Download, Eye, Edit, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth-context';
 import { toast } from '@/hooks/use-toast';
+import jsPDF from 'jspdf';
 
 interface Animal {
   id: string;
@@ -104,32 +105,78 @@ export default function VetPrescriptions() {
   };
 
   const generatePDF = async (receita: Receita) => {
-    // Simulação de geração de PDF
-    const pdfContent = `
-      RECEITA VETERINÁRIA
+    try {
+      const doc = new jsPDF();
       
-      Animal: ${receita.animais?.nome || 'N/A'}
-      Espécie: ${receita.animais?.especie || 'N/A'}
+      // Configurar fonte
+      doc.setFont('helvetica');
       
-      Medicamento: ${receita.medicamento}
-      Dosagem: ${receita.dosagem}
-      Duração: ${receita.duracao_dias ? `${receita.duracao_dias} dias` : 'Conforme orientação'}
+      // Cabeçalho
+      doc.setFontSize(20);
+      doc.setTextColor(40, 40, 40);
+      doc.text('RECEITA VETERINÁRIA', 20, 30);
       
-      Observações: ${receita.observacoes || 'Nenhuma'}
+      // Linha separadora
+      doc.setLineWidth(0.5);
+      doc.line(20, 35, 190, 35);
       
-      Data: ${new Date(receita.created_at).toLocaleDateString('pt-BR')}
-      Veterinário: ${userProfile?.nome || 'N/A'}
-    `;
-    
-    const blob = new Blob([pdfContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `receita-${receita.animais?.nome || 'animal'}-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      // Informações do animal
+      doc.setFontSize(14);
+      doc.setTextColor(60, 60, 60);
+      doc.text('DADOS DO ANIMAL', 20, 50);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Animal: ${receita.animais?.nome || 'N/A'}`, 20, 60);
+      doc.text(`Espécie: ${receita.animais?.especie || 'N/A'}`, 20, 70);
+      
+      // Informações da receita
+      doc.setFontSize(14);
+      doc.setTextColor(60, 60, 60);
+      doc.text('PRESCRIÇÃO', 20, 90);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(80, 80, 80);
+      doc.text(`Medicamento: ${receita.medicamento}`, 20, 100);
+      doc.text(`Dosagem: ${receita.dosagem}`, 20, 110);
+      doc.text(`Duração: ${receita.duracao_dias ? `${receita.duracao_dias} dias` : 'Conforme orientação'}`, 20, 120);
+      
+      // Observações
+      if (receita.observacoes) {
+        doc.setFontSize(14);
+        doc.setTextColor(60, 60, 60);
+        doc.text('OBSERVAÇÕES', 20, 140);
+        
+        doc.setFontSize(11);
+        doc.setTextColor(80, 80, 80);
+        const splitText = doc.splitTextToSize(receita.observacoes, 170);
+        doc.text(splitText, 20, 150);
+      }
+      
+      // Rodapé
+      const finalY = receita.observacoes ? 180 : 150;
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Data: ${new Date(receita.created_at).toLocaleDateString('pt-BR')}`, 20, finalY);
+      doc.text(`Veterinário: ${userProfile?.nome || 'N/A'}`, 20, finalY + 10);
+      doc.text(`Organização: ${organization?.name || 'N/A'}`, 20, finalY + 20);
+      
+      // Salvar PDF
+      const fileName = `receita-${receita.animais?.nome || 'animal'}-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      
+      toast({
+        title: "PDF gerado com sucesso!",
+        description: "A receita foi baixada em formato PDF.",
+      });
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o PDF da receita.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
