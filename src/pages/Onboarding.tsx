@@ -21,31 +21,49 @@ interface PlanoInfo {
   limite_produtos: number;
 }
 
-const planos: Record<PlanoType, PlanoInfo> = {
-  free: {
-    nome: "Gratuito",
-    preco: "R$ 0/mês",
-    recursos: ["Até 10 animais", "Até 2 funcionários", "Suporte básico"],
-    limite_animais: 10,
-    limite_funcionarios: 2,
-    limite_produtos: 5
-  },
-  pro: {
-    nome: "Profissional",
-    preco: "R$ 89/mês", 
-    recursos: ["Até 100 animais", "Até 10 funcionários", "Relatórios avançados", "Suporte prioritário"],
-    limite_animais: 100,
-    limite_funcionarios: 10,
-    limite_produtos: 50
-  },
-  enterprise: {
-    nome: "Enterprise",
-    preco: "R$ 199/mês",
-    recursos: ["Animais ilimitados", "Funcionários ilimitados", "Relatórios personalizados", "Suporte 24/7"],
-    limite_animais: 999999,
-    limite_funcionarios: 999999,
-    limite_produtos: 999999
-  }
+const getPlanos = (orgType: OrganizationType): Record<PlanoType, PlanoInfo> => {
+  const isEmpresa = orgType === 'empresa_alimentos' || orgType === 'empresa_medicamentos';
+  
+  return {
+    free: {
+      nome: "Gratuito",
+      preco: "R$ 0/mês",
+      recursos: [
+        isEmpresa ? "Até 5 produtos" : "Até 10 animais", 
+        "Até 2 funcionários", 
+        "Suporte básico"
+      ],
+      limite_animais: isEmpresa ? 0 : 10,
+      limite_funcionarios: 2,
+      limite_produtos: isEmpresa ? 5 : 5
+    },
+    pro: {
+      nome: "Profissional",
+      preco: "R$ 89/mês", 
+      recursos: [
+        isEmpresa ? "Até 50 produtos" : "Até 100 animais", 
+        "Até 10 funcionários", 
+        "Relatórios avançados", 
+        "Suporte prioritário"
+      ],
+      limite_animais: isEmpresa ? 0 : 100,
+      limite_funcionarios: 10,
+      limite_produtos: isEmpresa ? 50 : 50
+    },
+    enterprise: {
+      nome: "Enterprise",
+      preco: "R$ 199/mês",
+      recursos: [
+        isEmpresa ? "Produtos ilimitados" : "Animais ilimitados", 
+        "Funcionários ilimitados", 
+        "Relatórios personalizados", 
+        "Suporte 24/7"
+      ],
+      limite_animais: isEmpresa ? 0 : 999999,
+      limite_funcionarios: 999999,
+      limite_produtos: 999999
+    }
+  };
 };
 
 export default function Onboarding() {
@@ -128,7 +146,7 @@ export default function Onboarding() {
       }
 
       // 2. Criar organização
-      const selectedPlanInfo = planos[selectedPlan];
+      const selectedPlanInfo = getPlanos(organizationType)[selectedPlan];
       const { data: orgData, error: orgError } = await supabase
         .from('organizations')
         .insert({
@@ -213,10 +231,6 @@ export default function Onboarding() {
               onValueChange={(value) => setOrganizationType(value as OrganizationType)}
               className="space-y-4"
             >
-              {(Object.keys(planos) as (keyof typeof planos)[]).map((type) => {
-                if (type === 'free' || type === 'pro' || type === 'enterprise') return null;
-                return null;
-              })}
               
               {(['clinica_veterinaria', 'empresa_alimentos', 'empresa_medicamentos', 'fazenda'] as OrganizationType[]).map((type) => {
                 const info = getOrgTypeInfo(type);
@@ -328,7 +342,7 @@ export default function Onboarding() {
 
             <RadioGroup value={selectedPlan} onValueChange={(value) => setSelectedPlan(value as PlanoType)}>
               <div className="grid gap-4">
-                {(Object.entries(planos) as [PlanoType, PlanoInfo][]).map(([key, plano]) => (
+                {(Object.entries(getPlanos(organizationType)) as [PlanoType, PlanoInfo][]).map(([key, plano]) => (
                   <div key={key} className="flex items-start space-x-3">
                     <RadioGroupItem value={key} id={key} className="mt-1" />
                     <Label 
