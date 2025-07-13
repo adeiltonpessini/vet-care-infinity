@@ -55,6 +55,7 @@ export function AppSidebar() {
     switch (organization.type) {
       case 'clinica_veterinaria':
         return [
+          { title: 'Dashboard', url: '/vet', icon: BarChart3 },
           { title: 'Animais', url: '/vet/animals', icon: PawPrint },
           { title: 'Diagnósticos', url: '/vet/diagnostics', icon: Stethoscope },
           { title: 'Receitas', url: '/vet/prescriptions', icon: FileText },
@@ -73,11 +74,12 @@ export function AppSidebar() {
         ];
       case 'fazenda':
         return [
+          { title: 'Dashboard', url: '/fazenda', icon: BarChart3 },
           { title: 'Lotes', url: '/fazenda/lotes', icon: Wheat },
           { title: 'Animais', url: '/fazenda/animals', icon: PawPrint },
-          { title: 'Vacinações', url: '/fazenda/vaccinations', icon: CalendarDays },
-          { title: 'Eventos', url: '/fazenda/events', icon: ClipboardList },
-          { title: 'Estoque', url: '/fazenda/inventory', icon: Package },
+          { title: 'Vacinação', url: '/fazenda/vacinacao', icon: CalendarDays },
+          { title: 'Eventos', url: '/fazenda/eventos', icon: ClipboardList },
+          { title: 'Estoque', url: '/fazenda/estoque', icon: Package },
           { title: 'Equipe', url: '/fazenda/team', icon: Users },
         ];
       default:

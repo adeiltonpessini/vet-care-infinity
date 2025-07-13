@@ -36,6 +36,7 @@ import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 
 // Vet module
+import VetDashboard from '@/pages/vet/VetDashboard';
 import VetAnimals from '@/pages/vet/VetAnimals';
 import VetDiagnostics from '@/pages/vet/VetDiagnostics';
 import VetPrescriptions from '@/pages/vet/VetPrescriptions';
@@ -53,6 +54,11 @@ import EmpresaMetrics from '@/pages/empresa/EmpresaMetrics';
 // Fazenda module
 import FazendaDashboard from '@/pages/fazenda/FazendaDashboard';
 import FazendaLotes from '@/pages/fazenda/FazendaLotes';
+import FazendaAnimais from '@/pages/fazenda/FazendaAnimais';
+import FazendaVacinacao from '@/pages/fazenda/FazendaVacinacao';
+import FazendaEventos from '@/pages/fazenda/FazendaEventos';
+import FazendaEstoque from '@/pages/fazenda/FazendaEstoque';
+import FazendaTeam from '@/pages/fazenda/FazendaTeam';
 
 import NotFound from "./pages/NotFound";
 
@@ -227,6 +233,7 @@ const App = () => (
               } />
 
               {/* Vet Routes */}
+              <Route path="/vet" element={<ProtectedRoute><VetDashboard /></ProtectedRoute>} />
               <Route path="/vet/animals" element={<ProtectedRoute><VetAnimals /></ProtectedRoute>} />
               <Route path="/vet/diagnostics" element={<ProtectedRoute><VetDiagnostics /></ProtectedRoute>} />
               <Route path="/vet/prescriptions" element={<ProtectedRoute><VetPrescriptions /></ProtectedRoute>} />
@@ -244,6 +251,11 @@ const App = () => (
               {/* Fazenda Routes */}
               <Route path="/fazenda" element={<ProtectedRoute><FazendaDashboard /></ProtectedRoute>} />
               <Route path="/fazenda/lotes" element={<ProtectedRoute><FazendaLotes /></ProtectedRoute>} />
+              <Route path="/fazenda/animals" element={<ProtectedRoute><FazendaAnimais /></ProtectedRoute>} />
+              <Route path="/fazenda/vacinacao" element={<ProtectedRoute><FazendaVacinacao /></ProtectedRoute>} />
+              <Route path="/fazenda/eventos" element={<ProtectedRoute><FazendaEventos /></ProtectedRoute>} />
+              <Route path="/fazenda/estoque" element={<ProtectedRoute><FazendaEstoque /></ProtectedRoute>} />
+              <Route path="/fazenda/team" element={<ProtectedRoute><FazendaTeam /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

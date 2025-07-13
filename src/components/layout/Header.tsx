@@ -1,4 +1,4 @@
-import { Building2, User, LogOut, Settings } from 'lucide-react';
+import { Building2, User, LogOut, Settings, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -75,12 +75,46 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Notificações */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-4 w-4" />
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
+                3
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>Notificações</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <div className="max-h-64 overflow-y-auto">
+              <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
+                <div className="font-medium text-sm">Estoque baixo</div>
+                <div className="text-xs text-muted-foreground">Ração Premium está com apenas 2 unidades</div>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
+                <div className="font-medium text-sm">Vacinação pendente</div>
+                <div className="text-xs text-muted-foreground">5 animais precisam de reforço esta semana</div>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
+                <div className="font-medium text-sm">Diagnóstico IA</div>
+                <div className="text-xs text-muted-foreground">Novo resultado disponível para animal ID #123</div>
+              </DropdownMenuItem>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Perfil do usuário */}
         {userProfile && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2">
+                <div className="flex flex-col items-start">
+                  <span className="text-sm font-medium">{userProfile.nome}</span>
+                  <span className="text-xs text-muted-foreground capitalize">{userProfile.role}</span>
+                </div>
                 <User className="h-4 w-4" />
-                <span className="hidden sm:block">{userProfile.nome}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -88,7 +122,7 @@ export function Header() {
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium">{userProfile.nome}</p>
                   <p className="text-xs text-muted-foreground">{userProfile.email}</p>
-                  <Badge variant="outline" className="w-fit text-xs">
+                  <Badge variant="outline" className="w-fit text-xs capitalize">
                     {userProfile.role}
                   </Badge>
                 </div>
@@ -103,7 +137,7 @@ export function Header() {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 text-destructive">
                 <LogOut className="h-4 w-4" />
-                Sair
+                Sair da Conta
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
