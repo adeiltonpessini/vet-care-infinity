@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserProfile(profile);
 
       // Fetch organization if user has one
-      if (profile.org_id) {
+      if (profile?.org_id) {
         const { data: org, error: orgError } = await supabase
           .from('organizations')
           .select('*')
@@ -67,6 +67,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!orgError && org) {
           setOrganization(org);
         }
+      } else {
+        setOrganization(null);
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
