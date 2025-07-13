@@ -190,7 +190,7 @@ export default function VetAnimals() {
     const matchesSearch = animal.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          animal.nome_tutor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          animal.cpf_tutor?.includes(searchTerm);
-    const matchesSpecies = !speciesFilter || animal.especie === speciesFilter;
+    const matchesSpecies = !speciesFilter || speciesFilter === 'all' || animal.especie === speciesFilter;
     return matchesSearch && matchesSpecies;
   });
 
@@ -328,7 +328,7 @@ export default function VetAnimals() {
                 <SelectValue placeholder="Filtrar por espécie" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas as espécies</SelectItem>
+                <SelectItem value="all">Todas as espécies</SelectItem>
                 {especies.map(especie => (
                   <SelectItem key={especie} value={especie}>
                     {especie.charAt(0).toUpperCase() + especie.slice(1)}
