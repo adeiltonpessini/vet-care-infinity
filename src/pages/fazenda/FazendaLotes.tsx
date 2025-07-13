@@ -24,9 +24,9 @@ export default function FazendaLotes() {
   const [formData, setFormData] = useState({
     nome: '',
     data_inicio: '',
-    finalidade: '',
+    finalidade: undefined as string | undefined,
     quantidade_animais: '',
-    status: 'ativo'
+    status: 'ativo' as string
   });
 
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function FazendaLotes() {
     setFormData({
       nome: '',
       data_inicio: '',
-      finalidade: '',
+      finalidade: undefined,
       quantidade_animais: '',
       status: 'ativo'
     });
@@ -106,7 +106,7 @@ export default function FazendaLotes() {
     setFormData({
       nome: lote.nome,
       data_inicio: lote.data_inicio,
-      finalidade: lote.finalidade || '',
+      finalidade: lote.finalidade || undefined,
       quantidade_animais: lote.quantidade_animais?.toString() || '',
       status: lote.status || 'ativo'
     });
@@ -198,7 +198,7 @@ export default function FazendaLotes() {
 
               <div>
                 <Label htmlFor="finalidade">Finalidade</Label>
-                <Select value={formData.finalidade} onValueChange={(value) => setFormData({ ...formData, finalidade: value })}>
+                <Select value={formData.finalidade || ''} onValueChange={(value) => setFormData({ ...formData, finalidade: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a finalidade" />
                   </SelectTrigger>
