@@ -57,7 +57,7 @@ export default function Onboarding() {
   // Dados do formulário
   const [organizationType, setOrganizationType] = useState<OrganizationType>('clinica_veterinaria');
   const [organizationName, setOrganizationName] = useState('');
-  const [userRole, setUserRole] = useState<'admin' | 'veterinario' | 'colaborador'>('admin');
+  const [userRole, setUserRole] = useState<'admin' | 'veterinario' | 'colaborador' | 'vendedor' | 'gerente_produto'>('admin');
   const [selectedPlan, setSelectedPlan] = useState<PlanoType>('free');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -264,18 +264,54 @@ export default function Onboarding() {
               <div>
                 <Label htmlFor="userRole">Seu cargo na organização</Label>
                 <RadioGroup value={userRole} onValueChange={(value) => setUserRole(value as 'admin' | 'veterinario' | 'colaborador')}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="admin" id="admin" />
-                    <Label htmlFor="admin">Administrador/Proprietário</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="veterinario" id="veterinario" />
-                    <Label htmlFor="veterinario">Veterinário</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="colaborador" id="colaborador" />
-                    <Label htmlFor="colaborador">Colaborador</Label>
-                  </div>
+                  {organizationType === 'clinica_veterinaria' && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="admin" id="admin" />
+                        <Label htmlFor="admin">Administrador/Proprietário</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="veterinario" id="veterinario" />
+                        <Label htmlFor="veterinario">Veterinário</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="colaborador" id="colaborador" />
+                        <Label htmlFor="colaborador">Colaborador</Label>
+                      </div>
+                    </>
+                  )}
+                  {(organizationType === 'empresa_alimentos' || organizationType === 'empresa_medicamentos') && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="admin" id="admin" />
+                        <Label htmlFor="admin">Administrador/Proprietário</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="vendedor" id="vendedor" />
+                        <Label htmlFor="vendedor">Representante Comercial</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="gerente_produto" id="gerente_produto" />
+                        <Label htmlFor="gerente_produto">Gerente de Produto</Label>
+                      </div>
+                    </>
+                  )}
+                  {organizationType === 'fazenda' && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="admin" id="admin" />
+                        <Label htmlFor="admin">Gestor/Proprietário</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="veterinario" id="veterinario" />
+                        <Label htmlFor="veterinario">Zootecnista</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="colaborador" id="colaborador" />
+                        <Label htmlFor="colaborador">Operador</Label>
+                      </div>
+                    </>
+                  )}
                 </RadioGroup>
               </div>
             </div>

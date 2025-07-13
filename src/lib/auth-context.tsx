@@ -28,6 +28,7 @@ interface AuthContextType {
   userProfile: UserProfile | null;
   organization: Organization | null;
   loading: boolean;
+  isSuperAdmin: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -40,9 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      // Check if user is superadmin
+      const { data: user } = await supabase.auth.getUser();
+      const isSuper = user?.user?.email === 'adeilton.ata@gmail.com';
+      setIsSuperAdmin(isSuper);
+
       const { data: profile, error } = await supabase
         .from('users')
         .select('*')
@@ -133,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     userProfile,
     organization,
     loading,
+    isSuperAdmin,
     signOut,
     refreshProfile,
   };

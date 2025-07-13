@@ -85,14 +85,42 @@ export default function SuperAdmin() {
         return acc;
       }, {} as Record<string, number>) || {};
 
-      // Organizações acima do limite (mock)
-      const organizationsOverLimit = Math.floor(Math.random() * 5);
+      // Organizações acima do limite (verificação real)
+      const { data: metricsData } = await supabase
+        .from('organizacao_metrica_uso')
+        .select(`
+          *,
+          organizations!inner(limite_animais, limite_funcionarios, limite_produtos)
+        `);
 
-      // Organizações inativas (mock)
-      const inactiveOrganizations = Math.floor(Math.random() * 10);
+      const organizationsOverLimit = metricsData?.filter(metric => 
+        metric.total_animais > metric.organizations.limite_animais ||
+        metric.total_funcionarios > metric.organizations.limite_funcionarios ||
+        metric.total_produtos > metric.organizations.limite_produtos
+      ).length || 0;
 
-      // Revenue total (mock)
-      const totalRevenue = Math.floor(Math.random() * 50000) + 10000;
+      // Organizações inativas (sem atividade nos últimos 30 dias)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data: activeOrgs } = await supabase
+        .from('users')
+        .select('org_id')
+        .gte('updated_at', thirtyDaysAgo.toISOString())
+        .not('org_id', 'is', null);
+
+      const activeOrgIds = new Set(activeOrgs?.map(u => u.org_id));
+      const inactiveOrganizations = (totalOrganizations || 0) - activeOrgIds.size;
+
+      // Revenue calculado com base nos planos
+      const { data: planData } = await supabase
+        .from('organizations')
+        .select('plano');
+      
+      const planPrices = { free: 0, pro: 89, enterprise: 199 };
+      const totalRevenue = planData?.reduce((sum, org) => 
+        sum + (planPrices[org.plano as keyof typeof planPrices] || 0), 0
+      ) || 0;
 
       setStats({
         totalUsers: totalUsers || 0,

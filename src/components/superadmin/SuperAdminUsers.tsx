@@ -90,6 +90,44 @@ export default function SuperAdminUsers() {
     }
   };
 
+  const handleImpersonateUser = async (userId: string, userEmail: string) => {
+    if (!confirm(`⚠️ ATENÇÃO: Você está prestes a impersonar o usuário ${userEmail}.\n\nEsta ação será registrada nos logs de auditoria.\n\nDeseja continuar?`)) {
+      return;
+    }
+
+    try {
+      // Log da ação de impersonação
+      const { data: currentUser } = await supabase.auth.getUser();
+      
+      await supabase
+        .from('superadmin_logs')
+        .insert({
+          admin_user_id: currentUser.user?.id || '',
+          action: 'impersonate_user',
+          target_type: 'user',
+          target_id: userId,
+          details: {
+            target_email: userEmail,
+            timestamp: new Date().toISOString(),
+            ip_address: 'system'
+          }
+        });
+
+      toast({
+        title: "🔐 Impersonação Simulada",
+        description: `Ação registrada nos logs. Em produção, você seria redirecionado para a conta de ${userEmail}.`,
+      });
+
+    } catch (error) {
+      console.error('Erro ao registrar impersonação:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível realizar a impersonação",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getRoleLabel = (role: string) => {
     const labels = {
       superadmin: 'Super Admin',
@@ -221,6 +259,16 @@ export default function SuperAdminUsers() {
                       <div className="flex items-center gap-2">
                         <Button size="sm" variant="outline" title="Ver detalhes">
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          title="Impersonar usuário"
+                          onClick={() => handleImpersonateUser(user.id, user.email)}
+                          className="text-orange-600 hover:text-orange-700"
+                        >
+                          <UserCheck className="h-4 w-4" />
                         </Button>
                         
                         <Select
