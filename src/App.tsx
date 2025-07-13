@@ -106,6 +106,38 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function RoleBasedRedirect() {
+  const { userProfile, organization, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to appropriate dashboard based on organization type
+  if (organization) {
+    switch (organization.type) {
+      case 'clinica_veterinaria':
+        return <Navigate to="/vet" replace />;
+      case 'empresa_alimentos':
+      case 'empresa_medicamentos':
+        return <Navigate to="/empresa" replace />;
+      case 'fazenda':
+        return <Navigate to="/fazenda" replace />;
+      default:
+        return <Navigate to="/dashboard" replace />;
+    }
+  }
+
+  return <Navigate to="/dashboard" replace />;
+}
+
 const App = () => (
   <GlobalConfigProvider>
     <QueryClientProvider client={queryClient}>
@@ -130,105 +162,14 @@ const App = () => (
                   <Onboarding />
                 </PublicRoute>
               } />
-              <Route path="/superadmin" element={<SuperAdmin />} />
+              
+              {/* SuperAdmin Routes */}
+              <Route path="/superadmin/*" element={<SuperAdmin />} />
+              
+              {/* Auto-redirect to role-based dashboard */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/animals" element={
-                <ProtectedRoute>
-                  <Animals />
-                </ProtectedRoute>
-              } />
-              <Route path="/animals/new" element={
-                <ProtectedRoute>
-                  <NewAnimal />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/organizations" element={
-                <ProtectedRoute>
-                  <AdminOrganizations />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/users" element={
-                <ProtectedRoute>
-                  <AdminUsers />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin/analytics" element={
-                <ProtectedRoute>
-                  <AdminAnalytics />
-                </ProtectedRoute>
-              } />
-              <Route path="/products" element={
-                <ProtectedRoute>
-                  <Products />
-                </ProtectedRoute>
-              } />
-              <Route path="/inventory" element={
-                <ProtectedRoute>
-                  <Inventory />
-                </ProtectedRoute>
-              } />
-              <Route path="/team" element={
-                <ProtectedRoute>
-                  <Team />
-                </ProtectedRoute>
-              } />
-              <Route path="/reports" element={
-                <ProtectedRoute>
-                  <Reports />
-                </ProtectedRoute>
-              } />
-              <Route path="/lotes" element={
-                <ProtectedRoute>
-                  <Lotes />
-                </ProtectedRoute>
-              } />
-              <Route path="/vaccinations" element={
-                <ProtectedRoute>
-                  <Vaccinations />
-                </ProtectedRoute>
-              } />
-              <Route path="/events" element={
-                <ProtectedRoute>
-                  <Events />
-                </ProtectedRoute>
-              } />
-              <Route path="/diagnostics" element={
-                <ProtectedRoute>
-                  <Diagnostics />
-                </ProtectedRoute>
-              } />
-              <Route path="/prescriptions" element={
-                <ProtectedRoute>
-                  <Prescriptions />
-                </ProtectedRoute>
-              } />
-              <Route path="/formulas" element={
-                <ProtectedRoute>
-                  <Formulas />
-                </ProtectedRoute>
-              } />
-              <Route path="/indicators" element={
-                <ProtectedRoute>
-                  <Indicators />
-                </ProtectedRoute>
-              } />
-              <Route path="/metrics" element={
-                <ProtectedRoute>
-                  <Metrics />
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              } />
-              <Route path="/help" element={
-                <ProtectedRoute>
-                  <Help />
+                  <RoleBasedRedirect />
                 </ProtectedRoute>
               } />
 
@@ -256,6 +197,10 @@ const App = () => (
               <Route path="/fazenda/eventos" element={<ProtectedRoute><FazendaEventos /></ProtectedRoute>} />
               <Route path="/fazenda/estoque" element={<ProtectedRoute><FazendaEstoque /></ProtectedRoute>} />
               <Route path="/fazenda/team" element={<ProtectedRoute><FazendaTeam /></ProtectedRoute>} />
+
+              {/* General Routes */}
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
