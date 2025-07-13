@@ -12,9 +12,23 @@ import { Badge } from '@/components/ui/badge';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/lib/auth-context';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Notification {
+  id: string;
+  type: 'low_stock' | 'vaccine_due' | 'appointment' | 'prescription';
+  title: string;
+  message: string;
+  created_at: string;
+  animal_name?: string;
+  product_name?: string;
+}
 
 export function Header() {
   const { userProfile, organization, signOut } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const getOrgTypeLabel = (type: string) => {
     switch (type) {
@@ -42,6 +56,101 @@ export function Header() {
       default:
         return 'bg-muted';
     }
+  };
+
+  useEffect(() => {
+    if (organization) {
+      loadNotifications();
+    }
+  }, [organization]);
+
+  const loadNotifications = async () => {
+    try {
+      const notifications: Notification[] = [];
+
+      // Verificar estoque baixo
+      const { data: lowStock } = await supabase
+        .from('estoque')
+        .select('nome, quantidade, alerta_minimo')
+        .lt('quantidade', 'alerta_minimo')
+        .limit(5);
+
+      if (lowStock) {
+        lowStock.forEach(item => {
+          notifications.push({
+            id: `stock-${item.nome}`,
+            type: 'low_stock',
+            title: 'Estoque baixo',
+            message: `${item.nome} está com apenas ${item.quantidade} unidades (mínimo: ${item.alerta_minimo})`,
+            product_name: item.nome,
+            created_at: new Date().toISOString()
+          });
+        });
+      }
+
+      // Verificar vacinações pendentes (reforços vencidos ou próximos)
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      
+      const { data: vaccinesDue } = await supabase
+        .from('vacinacoes')
+        .select('vacina, reforco_previsto, animais(nome)')
+        .not('reforco_previsto', 'is', null)
+        .lte('reforco_previsto', nextWeek.toISOString().split('T')[0])
+        .limit(5);
+
+      if (vaccinesDue) {
+        vaccinesDue.forEach(vaccine => {
+          notifications.push({
+            id: `vaccine-${vaccine.reforco_previsto}`,
+            type: 'vaccine_due',
+            title: 'Vacinação pendente',
+            message: `Reforço de ${vaccine.vacina} vencendo em ${vaccine.reforco_previsto}`,
+            animal_name: vaccine.animais?.nome,
+            created_at: new Date().toISOString()
+          });
+        });
+      }
+
+      // Verificar diagnósticos recentes (últimos 3 dias)
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+      const { data: recentDiagnostics } = await supabase
+        .from('diagnosticos')
+        .select('tipo, descricao, animais(nome), created_at')
+        .gte('created_at', threeDaysAgo.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (recentDiagnostics) {
+        recentDiagnostics.forEach(diagnostic => {
+          notifications.push({
+            id: `diagnostic-${diagnostic.created_at}`,
+            type: 'prescription',
+            title: 'Novo diagnóstico',
+            message: `${diagnostic.tipo} para ${diagnostic.animais?.nome}`,
+            animal_name: diagnostic.animais?.nome,
+            created_at: diagnostic.created_at
+          });
+        });
+      }
+
+      setNotifications(notifications);
+      setNotificationCount(notifications.length);
+    } catch (error) {
+      console.error('Erro ao carregar notificações:', error);
+    }
+  };
+
+  const formatNotificationTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Agora';
+    if (diffInHours < 24) return `${diffInHours}h atrás`;
+    return `${Math.floor(diffInHours / 24)} dias atrás`;
   };
 
   return (
@@ -80,27 +189,34 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
+                  {notificationCount > 9 ? '9+' : notificationCount}
+                </span>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel>Notificações</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="max-h-64 overflow-y-auto">
-              <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
-                <div className="font-medium text-sm">Estoque baixo</div>
-                <div className="text-xs text-muted-foreground">Ração Premium está com apenas 2 unidades</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
-                <div className="font-medium text-sm">Vacinação pendente</div>
-                <div className="text-xs text-muted-foreground">5 animais precisam de reforço esta semana</div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="flex flex-col items-start gap-1 p-3">
-                <div className="font-medium text-sm">Diagnóstico IA</div>
-                <div className="text-xs text-muted-foreground">Novo resultado disponível para animal ID #123</div>
-              </DropdownMenuItem>
+              {notifications.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground text-sm">
+                  Nenhuma notificação no momento
+                </div>
+              ) : (
+                notifications.map((notification) => (
+                  <DropdownMenuItem key={notification.id} className="flex flex-col items-start gap-1 p-3">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="font-medium text-sm">{notification.title}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatNotificationTime(notification.created_at)}
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">{notification.message}</div>
+                  </DropdownMenuItem>
+                ))
+              )}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
