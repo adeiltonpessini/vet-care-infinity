@@ -75,10 +75,10 @@ export default function VetIndicators() {
       if (animalsError) throw animalsError;
       setAnimals(animalsData || []);
 
-      // Carregar produtos (todos os produtos disponíveis)
+      // Carregar produtos da própria organização e de outras
       const { data: produtosData, error: produtosError } = await supabase
         .from('produtos')
-        .select('id, nome, tipo')
+        .select('id, nome, tipo, org_id')
         .order('nome');
 
       if (produtosError) throw produtosError;

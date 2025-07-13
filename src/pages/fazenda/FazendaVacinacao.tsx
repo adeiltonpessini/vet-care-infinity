@@ -89,7 +89,7 @@ export default function FazendaVacinacao() {
           </p>
         </div>
         <Button asChild>
-          <Link to="/vaccinations/new">
+          <Link to="/fazenda/vacinacao/new">
             <Plus className="h-4 w-4 mr-2" />
             Nova Vacinação
           </Link>
@@ -229,7 +229,7 @@ export default function FazendaVacinacao() {
               {searchTerm ? 'Tente buscar com outros termos' : 'Registre a primeira vacinação'}
             </p>
             <Button asChild>
-              <Link to="/vaccinations/new">
+              <Link to="/fazenda/vacinacao/new">
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Vacinação
               </Link>

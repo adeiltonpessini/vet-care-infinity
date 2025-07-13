@@ -129,7 +129,7 @@ export default function FazendaEventos() {
           </p>
         </div>
         <Button asChild>
-          <Link to="/events/new">
+          <Link to="/fazenda/eventos/new">
             <Plus className="h-4 w-4 mr-2" />
             Novo Evento
           </Link>
@@ -243,7 +243,7 @@ export default function FazendaEventos() {
               {searchTerm ? 'Tente buscar com outros termos' : 'Registre o primeiro evento zootécnico'}
             </p>
             <Button asChild>
-              <Link to="/events/new">
+              <Link to="/fazenda/eventos/new">
                 <Plus className="h-4 w-4 mr-2" />
                 Novo Evento
               </Link>
