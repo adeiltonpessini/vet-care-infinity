@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import QRCodeScanner from '@/components/shared/QRCodeScanner';
 import { 
   PawPrint, 
   Plus, 
   Search,
   Edit,
   QrCode,
+  Scan,
   Calendar
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -21,6 +23,7 @@ export default function FazendaAnimais() {
   const [animals, setAnimals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   useEffect(() => {
     fetchAnimals();
@@ -82,12 +85,18 @@ export default function FazendaAnimais() {
             Gerencie todos os animais da sua fazenda
           </p>
         </div>
-        <Button asChild>
-          <Link to="/fazenda/animais/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Animal
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild>
+            <Link to="/fazenda/animais/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Novo Animal
+            </Link>
+          </Button>
+          <Button variant="outline" onClick={() => setScannerOpen(true)}>
+            <Scan className="h-4 w-4 mr-2" />
+            Escanear QR
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -217,6 +226,12 @@ export default function FazendaAnimais() {
           </CardContent>
         </Card>
       )}
+
+      {/* QR Code Scanner */}
+      <QRCodeScanner 
+        isOpen={scannerOpen} 
+        onClose={() => setScannerOpen(false)} 
+      />
     </div>
   );
 }
