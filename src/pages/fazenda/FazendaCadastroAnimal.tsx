@@ -68,7 +68,7 @@ export default function FazendaCadastroAnimal() {
         raca: formData.get('raca') as string || null,
         peso: formData.get('peso') ? parseFloat(formData.get('peso') as string) : null,
         data_nascimento: birthDate ? format(birthDate, 'yyyy-MM-dd') : null,
-        lote_id: formData.get('lote_id') as string || null,
+        lote_id: formData.get('lote_id') === 'sem-lote' ? null : formData.get('lote_id') as string || null,
         observacoes: formData.get('observacoes') as string || null,
         org_id: userProfile?.org_id,
       };
@@ -252,7 +252,7 @@ export default function FazendaCadastroAnimal() {
                       <SelectValue placeholder="Selecione um lote ou deixe vazio" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Sem lote</SelectItem>
+                      <SelectItem value="sem-lote">Sem lote</SelectItem>
                       {lotes.map((lote) => (
                         <SelectItem key={lote.id} value={lote.id}>
                           {lote.nome}
