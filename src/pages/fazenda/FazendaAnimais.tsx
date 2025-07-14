@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   PawPrint, 
   Plus, 
@@ -164,9 +165,34 @@ export default function FazendaAnimais() {
                     <Edit className="h-4 w-4 mr-1" />
                     Editar
                   </Button>
-                  <Button size="sm" variant="outline">
-                    <QrCode className="h-4 w-4" />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <QrCode className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-sm">
+                      <DialogHeader>
+                        <DialogTitle>QR Code - {animal.nome}</DialogTitle>
+                      </DialogHeader>
+                      <div className="text-center space-y-4">
+                        {animal.qr_code_url ? (
+                          <img 
+                            src={animal.qr_code_url} 
+                            alt={`QR Code para ${animal.nome}`}
+                            className="mx-auto border rounded"
+                          />
+                        ) : (
+                          <div className="py-8 text-muted-foreground">
+                            QR Code não disponível
+                          </div>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          Escaneie este código para acessar os dados do animal
+                        </p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </CardContent>
