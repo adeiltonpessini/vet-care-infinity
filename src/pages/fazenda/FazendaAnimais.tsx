@@ -82,7 +82,7 @@ export default function FazendaAnimais() {
           </p>
         </div>
         <Button asChild>
-          <Link to="/animals/new">
+          <Link to="/fazenda/animais/new">
             <Plus className="h-4 w-4 mr-2" />
             Novo Animal
           </Link>
@@ -183,7 +183,7 @@ export default function FazendaAnimais() {
               {searchTerm ? 'Tente buscar com outros termos' : 'Cadastre o primeiro animal da sua fazenda'}
             </p>
             <Button asChild>
-              <Link to="/animals/new">
+              <Link to="/fazenda/animais/new">
                 <Plus className="h-4 w-4 mr-2" />
                 Cadastrar Animal
               </Link>
