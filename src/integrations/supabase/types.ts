@@ -30,6 +30,7 @@ export type Database = {
           peso: number | null
           qr_code_url: string | null
           raca: string | null
+          tutor_id: string | null
           updated_at: string
         }
         Insert: {
@@ -47,6 +48,7 @@ export type Database = {
           peso?: number | null
           qr_code_url?: string | null
           raca?: string | null
+          tutor_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -64,6 +66,7 @@ export type Database = {
           peso?: number | null
           qr_code_url?: string | null
           raca?: string | null
+          tutor_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -75,10 +78,287 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "animais_tutor_id_fkey"
+            columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "tutores"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "fk_animais_lote_id"
             columns: ["lote_id"]
             isOneToOne: false
             referencedRelation: "lotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bonificacoes_veterinario: {
+        Row: {
+          created_at: string
+          data_fim: string | null
+          data_inicio: string
+          empresa_id: string
+          id: string
+          meta_indicacoes: number | null
+          percentual: number | null
+          produto_id: string
+          status: string | null
+          tipo_bonificacao: string
+          updated_at: string
+          valor: number | null
+          veterinario_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio: string
+          empresa_id: string
+          id?: string
+          meta_indicacoes?: number | null
+          percentual?: number | null
+          produto_id: string
+          status?: string | null
+          tipo_bonificacao: string
+          updated_at?: string
+          valor?: number | null
+          veterinario_id: string
+        }
+        Update: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          empresa_id?: string
+          id?: string
+          meta_indicacoes?: number | null
+          percentual?: number | null
+          produto_id?: string
+          status?: string | null
+          tipo_bonificacao?: string
+          updated_at?: string
+          valor?: number | null
+          veterinario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bonificacoes_veterinario_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonificacoes_veterinario_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonificacoes_veterinario_veterinario_id_fkey"
+            columns: ["veterinario_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cartao_vacinacao: {
+        Row: {
+          animal_id: string
+          created_at: string
+          data_criacao: string
+          id: string
+          observacoes_gerais: string | null
+          org_id: string | null
+          updated_at: string
+          veterinario_responsavel_id: string | null
+        }
+        Insert: {
+          animal_id: string
+          created_at?: string
+          data_criacao?: string
+          id?: string
+          observacoes_gerais?: string | null
+          org_id?: string | null
+          updated_at?: string
+          veterinario_responsavel_id?: string | null
+        }
+        Update: {
+          animal_id?: string
+          created_at?: string
+          data_criacao?: string
+          id?: string
+          observacoes_gerais?: string | null
+          org_id?: string | null
+          updated_at?: string
+          veterinario_responsavel_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cartao_vacinacao_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cartao_vacinacao_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cartao_vacinacao_veterinario_responsavel_id_fkey"
+            columns: ["veterinario_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dados_nutricionais: {
+        Row: {
+          calcio: number | null
+          cinzas: number | null
+          confianca_ia: number | null
+          created_at: string
+          energia_metabolizavel: number | null
+          extraido_por_ia: boolean | null
+          fibra_bruta: number | null
+          fosforo: number | null
+          gordura_bruta: number | null
+          id: string
+          outros_nutrientes: Json | null
+          produto_id: string
+          proteina_bruta: number | null
+          revisado_por_humano: boolean | null
+          umidade: number | null
+        }
+        Insert: {
+          calcio?: number | null
+          cinzas?: number | null
+          confianca_ia?: number | null
+          created_at?: string
+          energia_metabolizavel?: number | null
+          extraido_por_ia?: boolean | null
+          fibra_bruta?: number | null
+          fosforo?: number | null
+          gordura_bruta?: number | null
+          id?: string
+          outros_nutrientes?: Json | null
+          produto_id: string
+          proteina_bruta?: number | null
+          revisado_por_humano?: boolean | null
+          umidade?: number | null
+        }
+        Update: {
+          calcio?: number | null
+          cinzas?: number | null
+          confianca_ia?: number | null
+          created_at?: string
+          energia_metabolizavel?: number | null
+          extraido_por_ia?: boolean | null
+          fibra_bruta?: number | null
+          fosforo?: number | null
+          gordura_bruta?: number | null
+          id?: string
+          outros_nutrientes?: Json | null
+          produto_id?: string
+          proteina_bruta?: number | null
+          revisado_por_humano?: boolean | null
+          umidade?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dados_nutricionais_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      desempenho_alimentos: {
+        Row: {
+          animal_id: string | null
+          consumo_racao_kg: number | null
+          conversao_alimentar: number | null
+          created_at: string
+          data_fim: string | null
+          data_inicio: string
+          fazenda_id: string
+          ganho_peso_dia: number | null
+          id: string
+          lote_id: string | null
+          observacoes: string | null
+          periodo_dias: number
+          peso_atual: number | null
+          peso_inicial: number | null
+          produto_id: string
+        }
+        Insert: {
+          animal_id?: string | null
+          consumo_racao_kg?: number | null
+          conversao_alimentar?: number | null
+          created_at?: string
+          data_fim?: string | null
+          data_inicio: string
+          fazenda_id: string
+          ganho_peso_dia?: number | null
+          id?: string
+          lote_id?: string | null
+          observacoes?: string | null
+          periodo_dias: number
+          peso_atual?: number | null
+          peso_inicial?: number | null
+          produto_id: string
+        }
+        Update: {
+          animal_id?: string | null
+          consumo_racao_kg?: number | null
+          conversao_alimentar?: number | null
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          fazenda_id?: string
+          ganho_peso_dia?: number | null
+          id?: string
+          lote_id?: string | null
+          observacoes?: string | null
+          periodo_dias?: number
+          peso_atual?: number | null
+          peso_inicial?: number | null
+          produto_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "desempenho_alimentos_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "desempenho_alimentos_fazenda_id_fkey"
+            columns: ["fazenda_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "desempenho_alimentos_lote_id_fkey"
+            columns: ["lote_id"]
+            isOneToOne: false
+            referencedRelation: "lotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "desempenho_alimentos_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
             referencedColumns: ["id"]
           },
         ]
@@ -624,41 +904,89 @@ export type Database = {
           },
         ]
       }
+      receita_itens: {
+        Row: {
+          created_at: string
+          dosagem: string
+          duracao_dias: number | null
+          frequencia: string | null
+          id: string
+          medicamento_nome: string
+          observacoes: string | null
+          produto_id: string | null
+          receita_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dosagem: string
+          duracao_dias?: number | null
+          frequencia?: string | null
+          id?: string
+          medicamento_nome: string
+          observacoes?: string | null
+          produto_id?: string | null
+          receita_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dosagem?: string
+          duracao_dias?: number | null
+          frequencia?: string | null
+          id?: string
+          medicamento_nome?: string
+          observacoes?: string | null
+          produto_id?: string | null
+          receita_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receita_itens_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receita_itens_receita_id_fkey"
+            columns: ["receita_id"]
+            isOneToOne: false
+            referencedRelation: "receitas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       receitas: {
         Row: {
           animal_id: string | null
           created_at: string
-          dosagem: string
-          duracao_dias: number | null
           id: string
-          medicamento: string
           observacoes: string | null
           org_id: string | null
           pdf_url: string | null
+          status: string | null
+          tipo_receita: string | null
           veterinario_id: string | null
         }
         Insert: {
           animal_id?: string | null
           created_at?: string
-          dosagem: string
-          duracao_dias?: number | null
           id?: string
-          medicamento: string
           observacoes?: string | null
           org_id?: string | null
           pdf_url?: string | null
+          status?: string | null
+          tipo_receita?: string | null
           veterinario_id?: string | null
         }
         Update: {
           animal_id?: string | null
           created_at?: string
-          dosagem?: string
-          duracao_dias?: number | null
           id?: string
-          medicamento?: string
           observacoes?: string | null
           org_id?: string | null
           pdf_url?: string | null
+          status?: string | null
+          tipo_receita?: string | null
           veterinario_id?: string | null
         }
         Relationships: [
@@ -678,6 +1006,64 @@ export type Database = {
           },
           {
             foreignKeyName: "receitas_veterinario_id_fkey"
+            columns: ["veterinario_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sugestoes_diagnostico_ia: {
+        Row: {
+          aceito_pelo_veterinario: boolean | null
+          animal_id: string | null
+          confianca_geral: number | null
+          created_at: string
+          diagnostico_final_id: string | null
+          id: string
+          sintomas: string
+          sugestoes_ia: Json
+          veterinario_id: string | null
+        }
+        Insert: {
+          aceito_pelo_veterinario?: boolean | null
+          animal_id?: string | null
+          confianca_geral?: number | null
+          created_at?: string
+          diagnostico_final_id?: string | null
+          id?: string
+          sintomas: string
+          sugestoes_ia: Json
+          veterinario_id?: string | null
+        }
+        Update: {
+          aceito_pelo_veterinario?: boolean | null
+          animal_id?: string | null
+          confianca_geral?: number | null
+          created_at?: string
+          diagnostico_final_id?: string | null
+          id?: string
+          sintomas?: string
+          sugestoes_ia?: Json
+          veterinario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sugestoes_diagnostico_ia_animal_id_fkey"
+            columns: ["animal_id"]
+            isOneToOne: false
+            referencedRelation: "animais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sugestoes_diagnostico_ia_diagnostico_final_id_fkey"
+            columns: ["diagnostico_final_id"]
+            isOneToOne: false
+            referencedRelation: "diagnosticos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sugestoes_diagnostico_ia_veterinario_id_fkey"
             columns: ["veterinario_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -720,6 +1106,62 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: []
+      }
+      tutores: {
+        Row: {
+          cep: string | null
+          cidade: string | null
+          cpf: string | null
+          created_at: string
+          email: string | null
+          endereco: string | null
+          estado: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          org_id: string | null
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          cep?: string | null
+          cidade?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          org_id?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cep?: string | null
+          cidade?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          org_id?: string | null
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutores_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -828,6 +1270,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calcular_metricas_desempenho_produto: {
+        Args: { produto_uuid: string }
+        Returns: Json
+      }
       get_current_user_org_id: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -889,6 +1335,7 @@ export type Database = {
         | "colaborador"
         | "vendedor"
         | "gerente_produto"
+        | "veterinario_fazenda"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1057,6 +1504,7 @@ export const Constants = {
         "colaborador",
         "vendedor",
         "gerente_produto",
+        "veterinario_fazenda",
       ],
     },
   },

@@ -20,7 +20,8 @@ import {
   Palette,
   Banknote,
   Plug,
-  FileSearch
+  FileSearch,
+  Plus
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -57,6 +58,8 @@ export function AppSidebar() {
         return [
           { title: 'Dashboard', url: '/vet', icon: BarChart3 },
           { title: 'Animais', url: '/vet/animals', icon: PawPrint },
+          { title: 'Cadastro Animal', url: '/vet/animal-registration', icon: Plus },
+          { title: 'Tutores', url: '/vet/tutors', icon: Users },
           { title: 'Diagnósticos', url: '/vet/diagnostics', icon: Stethoscope },
           { title: 'Receitas', url: '/vet/prescriptions', icon: FileText },
           { title: 'Indicações', url: '/vet/indicators', icon: TrendingUp },

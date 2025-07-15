@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { FileText, Plus, Download, Eye, Edit, Trash2 } from 'lucide-react';
+import { FileText, Plus, Download, Eye, Edit, Trash2, ShoppingCart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth-context';
 import { toast } from '@/hooks/use-toast';
@@ -20,38 +20,70 @@ interface Animal {
   especie: string;
 }
 
+interface Produto {
+  id: string;
+  nome: string;
+  tipo: string;
+  org_id: string;
+  organizations?: {
+    name: string;
+  };
+}
+
+interface ReceitaItem {
+  id: string;
+  medicamento_nome: string;
+  dosagem: string;
+  frequencia?: string;
+  duracao_dias?: number;
+  observacoes?: string;
+  produto_id?: string;
+  produtos?: Produto;
+}
+
 interface Receita {
   id: string;
-  medicamento: string;
-  dosagem: string;
-  duracao_dias?: number;
+  tipo_receita: string;
+  status: string;
   observacoes?: string;
   pdf_url?: string;
   created_at: string;
   animal_id?: string;
   animais?: Animal;
+  receita_itens?: ReceitaItem[];
 }
 
 export default function VetPrescriptions() {
   const { userProfile, organization } = useAuth();
   const [receitas, setReceitas] = useState<Receita[]>([]);
   const [animals, setAnimals] = useState<Animal[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [editingReceita, setEditingReceita] = useState<Receita | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
     animal_id: '',
-    medicamento: '',
-    dosagem: '',
-    duracao_dias: '',
+    tipo_receita: 'medicamento',
     observacoes: ''
+  });
+
+  const [receitaItens, setReceitaItens] = useState<Omit<ReceitaItem, 'id'>[]>([]);
+  const [currentItem, setCurrentItem] = useState({
+    medicamento_nome: '',
+    dosagem: '',
+    frequencia: '',
+    duracao_dias: '',
+    observacoes: '',
+    produto_id: ''
   });
 
   useEffect(() => {
     loadReceitas();
     loadAnimals();
+    loadProdutos();
   }, []);
 
   const loadReceitas = async () => {
@@ -61,7 +93,17 @@ export default function VetPrescriptions() {
         .from('receitas')
         .select(`
           *,
-          animais(id, nome, especie)
+          animais(id, nome, especie),
+          receita_itens(
+            id,
+            medicamento_nome,
+            dosagem,
+            frequencia,
+            duracao_dias,
+            observacoes,
+            produto_id,
+            produtos(id, nome, tipo, org_id, organizations(name))
+          )
         `)
         .order('created_at', { ascending: false });
 
@@ -93,15 +135,76 @@ export default function VetPrescriptions() {
     }
   };
 
+  const loadProdutos = async () => {
+    try {
+      // Buscar produtos de empresas de medicamentos
+      const { data, error } = await supabase
+        .from('produtos')
+        .select(`
+          id, nome, tipo, org_id,
+          organizations(name)
+        `)
+        .in('tipo', ['medicamento', 'vacina', 'suplemento'])
+        .order('nome');
+
+      if (error) throw error;
+      setProdutos(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar produtos:', error);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       animal_id: '',
-      medicamento: '',
-      dosagem: '',
-      duracao_dias: '',
+      tipo_receita: 'medicamento',
       observacoes: ''
     });
+    setReceitaItens([]);
     setEditingReceita(null);
+  };
+
+  const addItemToReceita = () => {
+    if (!currentItem.medicamento_nome || !currentItem.dosagem) {
+      toast({
+        title: "Erro",
+        description: "Medicamento e dosagem são obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newItem = {
+      medicamento_nome: currentItem.medicamento_nome,
+      dosagem: currentItem.dosagem,
+      frequencia: currentItem.frequencia || undefined,
+      duracao_dias: currentItem.duracao_dias ? Number(currentItem.duracao_dias) : undefined,
+      observacoes: currentItem.observacoes || undefined,
+      produto_id: currentItem.produto_id || undefined
+    };
+
+    setReceitaItens([...receitaItens, newItem]);
+    setCurrentItem({
+      medicamento_nome: '',
+      dosagem: '',
+      frequencia: '',
+      duracao_dias: '',
+      observacoes: '',
+      produto_id: ''
+    });
+    setIsProductDialogOpen(false);
+  };
+
+  const removeItemFromReceita = (index: number) => {
+    setReceitaItens(receitaItens.filter((_, i) => i !== index));
+  };
+
+  const selectProduto = (produto: Produto) => {
+    setCurrentItem({
+      ...currentItem,
+      medicamento_nome: produto.nome,
+      produto_id: produto.id
+    });
   };
 
   const generatePDF = async (receita: Receita) => {
@@ -130,31 +233,47 @@ export default function VetPrescriptions() {
       doc.text(`Animal: ${receita.animais?.nome || 'N/A'}`, 20, 60);
       doc.text(`Espécie: ${receita.animais?.especie || 'N/A'}`, 20, 70);
       
-      // Informações da receita
+      // Informações das prescrições
       doc.setFontSize(14);
       doc.setTextColor(60, 60, 60);
-      doc.text('PRESCRIÇÃO', 20, 90);
+      doc.text('PRESCRIÇÕES', 20, 90);
       
-      doc.setFontSize(11);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`Medicamento: ${receita.medicamento}`, 20, 100);
-      doc.text(`Dosagem: ${receita.dosagem}`, 20, 110);
-      doc.text(`Duração: ${receita.duracao_dias ? `${receita.duracao_dias} dias` : 'Conforme orientação'}`, 20, 120);
+      let currentY = 100;
+      receita.receita_itens?.forEach((item, index) => {
+        doc.setFontSize(11);
+        doc.setTextColor(80, 80, 80);
+        doc.text(`${index + 1}. ${item.medicamento_nome}`, 20, currentY);
+        doc.text(`   Dosagem: ${item.dosagem}`, 20, currentY + 10);
+        if (item.frequencia) {
+          doc.text(`   Frequência: ${item.frequencia}`, 20, currentY + 20);
+          currentY += 10;
+        }
+        if (item.duracao_dias) {
+          doc.text(`   Duração: ${item.duracao_dias} dias`, 20, currentY + 20);
+          currentY += 10;
+        }
+        if (item.observacoes) {
+          doc.text(`   Obs: ${item.observacoes}`, 20, currentY + 20);
+          currentY += 10;
+        }
+        currentY += 30;
+      });
       
-      // Observações
+      // Observações gerais
       if (receita.observacoes) {
         doc.setFontSize(14);
         doc.setTextColor(60, 60, 60);
-        doc.text('OBSERVAÇÕES', 20, 140);
+        doc.text('OBSERVAÇÕES GERAIS', 20, currentY + 10);
         
         doc.setFontSize(11);
         doc.setTextColor(80, 80, 80);
         const splitText = doc.splitTextToSize(receita.observacoes, 170);
-        doc.text(splitText, 20, 150);
+        doc.text(splitText, 20, currentY + 20);
+        currentY += 30;
       }
       
       // Rodapé
-      const finalY = receita.observacoes ? 180 : 150;
+      const finalY = currentY + 20;
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
       doc.text(`Data: ${new Date(receita.created_at).toLocaleDateString('pt-BR')}`, 20, finalY);
@@ -182,16 +301,25 @@ export default function VetPrescriptions() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (receitaItens.length === 0) {
+      toast({
+        title: "Erro",
+        description: "Adicione pelo menos um item à receita.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       const receitaData = {
         animal_id: formData.animal_id || null,
-        medicamento: formData.medicamento,
-        dosagem: formData.dosagem,
-        duracao_dias: formData.duracao_dias ? Number(formData.duracao_dias) : null,
+        tipo_receita: formData.tipo_receita,
         observacoes: formData.observacoes || null,
         org_id: organization?.id,
         veterinario_id: userProfile?.id
       };
+
+      let receitaId: string;
 
       if (editingReceita) {
         const { error } = await supabase
@@ -200,21 +328,41 @@ export default function VetPrescriptions() {
           .eq('id', editingReceita.id);
 
         if (error) throw error;
-        toast({
-          title: "Sucesso",
-          description: "Receita atualizada com sucesso!",
-        });
+
+        // Remover itens antigos
+        await supabase
+          .from('receita_itens')
+          .delete()
+          .eq('receita_id', editingReceita.id);
+
+        receitaId = editingReceita.id;
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('receitas')
-          .insert([receitaData]);
+          .insert([receitaData])
+          .select()
+          .single();
 
         if (error) throw error;
-        toast({
-          title: "Sucesso",
-          description: "Receita cadastrada com sucesso!",
-        });
+        receitaId = data.id;
       }
+
+      // Inserir itens da receita
+      const itensToInsert = receitaItens.map(item => ({
+        ...item,
+        receita_id: receitaId
+      }));
+
+      const { error: itensError } = await supabase
+        .from('receita_itens')
+        .insert(itensToInsert);
+
+      if (itensError) throw itensError;
+
+      toast({
+        title: "Sucesso",
+        description: editingReceita ? "Receita atualizada com sucesso!" : "Receita cadastrada com sucesso!",
+      });
 
       setIsDialogOpen(false);
       resetForm();
@@ -233,11 +381,10 @@ export default function VetPrescriptions() {
     setEditingReceita(receita);
     setFormData({
       animal_id: receita.animal_id || '',
-      medicamento: receita.medicamento,
-      dosagem: receita.dosagem,
-      duracao_dias: receita.duracao_dias?.toString() || '',
+      tipo_receita: receita.tipo_receita,
       observacoes: receita.observacoes || ''
     });
+    setReceitaItens(receita.receita_itens || []);
     setIsDialogOpen(true);
   };
 
@@ -289,13 +436,13 @@ export default function VetPrescriptions() {
                   Nova Receita
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>
                     {editingReceita ? 'Editar Receita' : 'Nova Receita'}
                   </DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="animal_id">Animal</Label>
@@ -313,37 +460,160 @@ export default function VetPrescriptions() {
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="duracao_dias">Duração (dias)</Label>
-                      <Input
-                        id="duracao_dias"
-                        type="number"
-                        min="1"
-                        value={formData.duracao_dias}
-                        onChange={(e) => setFormData({...formData, duracao_dias: e.target.value})}
-                      />
+                      <Label htmlFor="tipo_receita">Tipo de Receita</Label>
+                      <Select value={formData.tipo_receita} onValueChange={(value) => setFormData({...formData, tipo_receita: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="medicamento">Medicamento</SelectItem>
+                          <SelectItem value="racao">Ração</SelectItem>
+                          <SelectItem value="suplemento">Suplemento</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                  <div>
-                    <Label htmlFor="medicamento">Medicamento *</Label>
-                    <Input
-                      id="medicamento"
-                      value={formData.medicamento}
-                      onChange={(e) => setFormData({...formData, medicamento: e.target.value})}
-                      required
-                    />
+
+                  {/* Itens da Receita */}
+                  <div className="border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">Itens da Receita</h3>
+                      <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button type="button" variant="outline">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Adicionar Item
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl">
+                          <DialogHeader>
+                            <DialogTitle>Adicionar Item à Receita</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            {/* Seleção de Produtos */}
+                            <div>
+                              <Label>Produtos Disponíveis</Label>
+                              <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto border rounded p-2">
+                                {produtos.map(produto => (
+                                  <div 
+                                    key={produto.id} 
+                                    className="flex justify-between items-center p-2 hover:bg-muted cursor-pointer rounded"
+                                    onClick={() => selectProduto(produto)}
+                                  >
+                                    <div>
+                                      <span className="font-medium">{produto.nome}</span>
+                                      <Badge variant="outline" className="ml-2">{produto.tipo}</Badge>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                      {produto.organizations?.name}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label htmlFor="medicamento_nome">Medicamento/Produto *</Label>
+                              <Input
+                                id="medicamento_nome"
+                                value={currentItem.medicamento_nome}
+                                onChange={(e) => setCurrentItem({...currentItem, medicamento_nome: e.target.value})}
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="dosagem">Dosagem *</Label>
+                              <Input
+                                id="dosagem"
+                                value={currentItem.dosagem}
+                                onChange={(e) => setCurrentItem({...currentItem, dosagem: e.target.value})}
+                                required
+                                placeholder="Ex: 1 comprimido de 12 em 12 horas"
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="frequencia">Frequência</Label>
+                                <Input
+                                  id="frequencia"
+                                  value={currentItem.frequencia}
+                                  onChange={(e) => setCurrentItem({...currentItem, frequencia: e.target.value})}
+                                  placeholder="Ex: 2x ao dia"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="duracao_dias">Duração (dias)</Label>
+                                <Input
+                                  id="duracao_dias"
+                                  type="number"
+                                  min="1"
+                                  value={currentItem.duracao_dias}
+                                  onChange={(e) => setCurrentItem({...currentItem, duracao_dias: e.target.value})}
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label htmlFor="observacoes_item">Observações</Label>
+                              <Textarea
+                                id="observacoes_item"
+                                value={currentItem.observacoes}
+                                onChange={(e) => setCurrentItem({...currentItem, observacoes: e.target.value})}
+                                rows={2}
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button type="button" variant="outline" onClick={() => setIsProductDialogOpen(false)}>
+                                Cancelar
+                              </Button>
+                              <Button type="button" onClick={addItemToReceita}>
+                                Adicionar
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+
+                    {/* Lista de Itens */}
+                    {receitaItens.length > 0 ? (
+                      <div className="space-y-2">
+                        {receitaItens.map((item, index) => (
+                          <div key={index} className="border rounded p-3 bg-muted/50">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="font-medium">{item.medicamento_nome}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  Dosagem: {item.dosagem}
+                                  {item.frequencia && ` | Frequência: ${item.frequencia}`}
+                                  {item.duracao_dias && ` | Duração: ${item.duracao_dias} dias`}
+                                </div>
+                                {item.observacoes && (
+                                  <div className="text-sm text-muted-foreground mt-1">
+                                    Obs: {item.observacoes}
+                                  </div>
+                                )}
+                              </div>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeItemFromReceita(index)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-muted-foreground py-8">
+                        Nenhum item adicionado
+                      </div>
+                    )}
                   </div>
+
                   <div>
-                    <Label htmlFor="dosagem">Dosagem *</Label>
-                    <Input
-                      id="dosagem"
-                      value={formData.dosagem}
-                      onChange={(e) => setFormData({...formData, dosagem: e.target.value})}
-                      required
-                      placeholder="Ex: 1 comprimido de 12 em 12 horas"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="observacoes">Observações</Label>
+                    <Label htmlFor="observacoes">Observações Gerais</Label>
                     <Textarea
                       id="observacoes"
                       value={formData.observacoes}
@@ -375,9 +645,9 @@ export default function VetPrescriptions() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Animal</TableHead>
-                  <TableHead>Medicamento</TableHead>
-                  <TableHead>Dosagem</TableHead>
-                  <TableHead>Duração</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Itens</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Ações</TableHead>
                 </TableRow>
@@ -388,14 +658,16 @@ export default function VetPrescriptions() {
                     <TableCell>
                       {receita.animais?.nome || 'N/A'}
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {receita.medicamento}
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {receita.dosagem}
+                    <TableCell>
+                      <Badge variant="outline">{receita.tipo_receita}</Badge>
                     </TableCell>
                     <TableCell>
-                      {receita.duracao_dias ? `${receita.duracao_dias} dias` : 'Cont.'}
+                      {receita.receita_itens?.length || 0} item(s)
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={receita.status === 'ativa' ? 'default' : 'secondary'}>
+                        {receita.status}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       {new Date(receita.created_at).toLocaleDateString('pt-BR')}

@@ -29,7 +29,7 @@ interface User {
   nome: string;
   email: string;
   telefone?: string;
-  role: 'superadmin' | 'admin' | 'veterinario' | 'colaborador' | 'vendedor' | 'gerente_produto';
+  role: 'superadmin' | 'admin' | 'veterinario' | 'colaborador' | 'vendedor' | 'gerente_produto' | 'veterinario_fazenda';
   org_id: string | null;
   created_at: string;
   organization?: {
