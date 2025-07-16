@@ -69,13 +69,17 @@ export function Header() {
       const notifications: Notification[] = [];
 
       // Verificar estoque baixo
-      const { data: lowStock } = await supabase
+      const { data: stockData } = await supabase
         .from('estoque')
         .select('nome, quantidade, alerta_minimo')
-        .filter('quantidade', 'lt', 'alerta_minimo')
         .limit(5);
 
-      if (lowStock) {
+      // Filter client-side to compare numeric columns
+      const lowStock = stockData?.filter(item => 
+        item.quantidade <= item.alerta_minimo
+      ) || [];
+
+      if (lowStock.length > 0) {
         lowStock.forEach(item => {
           notifications.push({
             id: `stock-${item.nome}`,

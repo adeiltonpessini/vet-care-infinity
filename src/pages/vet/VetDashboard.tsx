@@ -76,20 +76,24 @@ export default function VetDashboard() {
           .limit(5);
 
         // Load low stock items
-        const { data: lowStock, count: lowStockCount } = await supabase
+        const { data: stockData } = await supabase
           .from('estoque')
-          .select('*', { count: 'exact' })
-          .eq('org_id', organization.id)
-          .filter('quantidade', 'lte', 'alerta_minimo');
+          .select('*')
+          .eq('org_id', organization.id);
+
+        // Filter client-side to compare numeric columns
+        const lowStock = stockData?.filter(item => 
+          item.quantidade <= item.alerta_minimo
+        ) || [];
 
         setStats({
           totalAnimals: animalsCount || 0,
           totalDiagnostics: diagnosticsCount || 0,
           totalPrescriptions: prescriptionsCount || 0,
-          lowStockItems: lowStockCount || 0,
+          lowStockItems: lowStock.length,
           recentDiagnostics: diagnostics || [],
           recentPrescriptions: prescriptions || [],
-          lowStockAlerts: lowStock || []
+          lowStockAlerts: lowStock
         });
       } catch (error) {
         console.error('Error loading dashboard data:', error);
