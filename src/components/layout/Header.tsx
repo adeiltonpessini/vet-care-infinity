@@ -72,7 +72,7 @@ export function Header() {
       const { data: lowStock } = await supabase
         .from('estoque')
         .select('nome, quantidade, alerta_minimo')
-        .lt('quantidade', 'alerta_minimo')
+        .filter('quantidade', 'lt', supabase.raw('alerta_minimo'))
         .limit(5);
 
       if (lowStock) {
