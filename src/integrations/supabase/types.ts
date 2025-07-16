@@ -93,6 +93,80 @@ export type Database = {
           },
         ]
       }
+      bonificacoes: {
+        Row: {
+          created_at: string
+          data_bonificacao: string
+          data_pagamento: string | null
+          descricao: string | null
+          id: string
+          indicacao_id: string | null
+          org_id: string | null
+          produto_id: string | null
+          status: string
+          updated_at: string
+          valor: number
+          veterinario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_bonificacao?: string
+          data_pagamento?: string | null
+          descricao?: string | null
+          id?: string
+          indicacao_id?: string | null
+          org_id?: string | null
+          produto_id?: string | null
+          status?: string
+          updated_at?: string
+          valor: number
+          veterinario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_bonificacao?: string
+          data_pagamento?: string | null
+          descricao?: string | null
+          id?: string
+          indicacao_id?: string | null
+          org_id?: string | null
+          produto_id?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+          veterinario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bonificacoes_indicacao_id_fkey"
+            columns: ["indicacao_id"]
+            isOneToOne: false
+            referencedRelation: "indicacoes_produto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonificacoes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonificacoes_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonificacoes_veterinario_id_fkey"
+            columns: ["veterinario_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bonificacoes_veterinario: {
         Row: {
           created_at: string
@@ -101,6 +175,7 @@ export type Database = {
           empresa_id: string
           id: string
           meta_indicacoes: number | null
+          org_id: string | null
           percentual: number | null
           produto_id: string
           status: string | null
@@ -116,6 +191,7 @@ export type Database = {
           empresa_id: string
           id?: string
           meta_indicacoes?: number | null
+          org_id?: string | null
           percentual?: number | null
           produto_id: string
           status?: string | null
@@ -131,6 +207,7 @@ export type Database = {
           empresa_id?: string
           id?: string
           meta_indicacoes?: number | null
+          org_id?: string | null
           percentual?: number | null
           produto_id?: string
           status?: string | null
@@ -143,6 +220,13 @@ export type Database = {
           {
             foreignKeyName: "bonificacoes_veterinario_empresa_id_fkey"
             columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonificacoes_veterinario_org_id_fkey"
+            columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
@@ -1273,6 +1357,10 @@ export type Database = {
       calcular_metricas_desempenho_produto: {
         Args: { produto_uuid: string }
         Returns: Json
+      }
+      get_current_user_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_current_user_org_id: {
         Args: Record<PropertyKey, never>

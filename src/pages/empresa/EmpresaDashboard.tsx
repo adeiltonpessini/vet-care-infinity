@@ -30,17 +30,31 @@ export default function EmpresaDashboard() {
     if (!organization?.id) return;
 
     try {
-      const [produtosRes, indicacoesRes, funcionariosRes] = await Promise.all([
+      const [produtosRes, indicacoesRes, funcionariosRes, bonificacoesRes] = await Promise.all([
         supabase.from('produtos').select('id').eq('org_id', organization.id),
-        supabase.from('indicacoes_produto').select('id').eq('org_id', organization.id),
+        supabase.from('indicacoes_produto').select('produto_id, produtos(nome)').eq('org_id', organization.id),
         supabase.from('users').select('id').eq('org_id', organization.id),
+        supabase.from('bonificacoes_veterinario').select('id').eq('empresa_id', organization.id).eq('status', 'ativo'),
       ]);
+
+      // Calcular produto mais indicado
+      const indicacoesPorProduto = indicacoesRes.data?.reduce((acc, indicacao) => {
+        if (indicacao.produtos) {
+          const nome = indicacao.produtos.nome;
+          acc[nome] = (acc[nome] || 0) + 1;
+        }
+        return acc;
+      }, {} as Record<string, number>);
+
+      const produtoMaisIndicado = indicacoesPorProduto 
+        ? Object.entries(indicacoesPorProduto).sort(([,a], [,b]) => b - a)[0]?.[0] || 'Nenhum'
+        : 'Nenhum';
 
       setData({
         totalProdutos: produtosRes.data?.length || 0,
         totalIndicacoes: indicacoesRes.data?.length || 0,
         totalFuncionarios: funcionariosRes.data?.length || 0,
-        produtoMaisIndicado: 'Ração Premium',
+        produtoMaisIndicado,
       });
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error);

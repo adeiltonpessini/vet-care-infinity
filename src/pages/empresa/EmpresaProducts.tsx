@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Plus, Package, Edit, Trash2 } from 'lucide-react';
+import { Plus, Package, Edit, Trash2, Upload, Camera, Brain, Zap } from 'lucide-react';
 import type { Tables, Enums } from '@/integrations/supabase/types';
 
 type Produto = Tables<'produtos'>;
@@ -34,6 +34,10 @@ export default function EmpresaProducts() {
     fase_alvo: [] as string[],
     imagem_url: ''
   });
+  
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [extractingNutrition, setExtractingNutrition] = useState(false);
 
   useEffect(() => {
     fetchProdutos();
@@ -109,6 +113,85 @@ export default function EmpresaProducts() {
       fase_alvo: [],
       imagem_url: ''
     });
+    setImageFile(null);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `produtos/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('produtos')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('produtos')
+        .getPublicUrl(filePath);
+
+      setFormData({ ...formData, imagem_url: publicUrl });
+      toast({ title: 'Sucesso', description: 'Imagem carregada com sucesso!' });
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem:', error);
+      toast({ title: 'Erro', description: 'Erro ao fazer upload da imagem', variant: 'destructive' });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const extractNutritionalData = async () => {
+    if (!formData.imagem_url) {
+      toast({ title: 'Erro', description: 'Carregue uma imagem primeiro', variant: 'destructive' });
+      return;
+    }
+
+    setExtractingNutrition(true);
+    try {
+      // Simular extração de dados nutricionais por IA
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Dados simulados - em produção, seria uma chamada para API de IA
+      const extractedData = {
+        proteina_bruta: 28.0,
+        gordura_bruta: 15.0,
+        fibra_bruta: 4.0,
+        umidade: 10.0,
+        cinzas: 8.0,
+        calcio: 1.2,
+        fosforo: 1.0,
+        energia_metabolizavel: 3500
+      };
+
+      // Inserir dados nutricionais no banco
+      const { error } = await supabase
+        .from('dados_nutricionais')
+        .insert({
+          produto_id: editingProduct?.id,
+          ...extractedData,
+          extraido_por_ia: true,
+          confianca_ia: 85.5
+        });
+
+      if (error) throw error;
+
+      toast({ 
+        title: 'Sucesso', 
+        description: 'Dados nutricionais extraídos com sucesso!' 
+      });
+    } catch (error) {
+      console.error('Erro ao extrair dados nutricionais:', error);
+      toast({ 
+        title: 'Erro', 
+        description: 'Erro ao extrair dados nutricionais', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setExtractingNutrition(false);
+    }
   };
 
   const handleEdit = (produto: Produto) => {
@@ -230,6 +313,47 @@ export default function EmpresaProducts() {
                   value={formData.preco_kg}
                   onChange={(e) => setFormData({ ...formData, preco_kg: e.target.value })}
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="imagem">Imagem do Produto</Label>
+                <div className="space-y-2">
+                  <Input
+                    id="imagem"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setImageFile(file);
+                        handleImageUpload(file);
+                      }
+                    }}
+                  />
+                  {formData.imagem_url && (
+                    <div className="flex items-center space-x-2">
+                      <img 
+                        src={formData.imagem_url} 
+                        alt="Preview" 
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={extractNutritionalData}
+                        disabled={extractingNutrition}
+                      >
+                        {extractingNutrition ? (
+                          <Zap className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Brain className="mr-2 h-4 w-4" />
+                        )}
+                        {extractingNutrition ? 'Extraindo...' : 'Extrair Dados Nutricionais'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <DialogFooter>

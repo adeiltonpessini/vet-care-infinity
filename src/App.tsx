@@ -48,8 +48,10 @@ import VetTeam from '@/pages/vet/VetTeam';
 // Empresa module
 import EmpresaDashboard from '@/pages/empresa/EmpresaDashboard';
 import EmpresaProducts from '@/pages/empresa/EmpresaProducts';
+import EmpresaBonificacoes from '@/pages/empresa/EmpresaBonificacoes';
 import EmpresaTeam from '@/pages/empresa/EmpresaTeam';
 import EmpresaMetrics from '@/pages/empresa/EmpresaMetrics';
+import VetIndicacoes from '@/pages/vet/VetIndicacoes';
 
 // Fazenda module
 import FazendaDashboard from '@/pages/fazenda/FazendaDashboard';
