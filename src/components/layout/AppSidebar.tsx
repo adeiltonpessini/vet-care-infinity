@@ -21,7 +21,10 @@ import {
   Banknote,
   Plug,
   FileSearch,
-  Plus
+  Plus,
+  Heart,
+  Syringe,
+  Calendar
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -78,10 +81,11 @@ export function AppSidebar() {
       case 'fazenda':
         return [
           { title: 'Dashboard', url: '/fazenda', icon: BarChart3 },
+          { title: 'Animais', url: '/fazenda/animais', icon: Heart },
           { title: 'Lotes', url: '/fazenda/lotes', icon: Wheat },
-          { title: 'Animais', url: '/fazenda/animals', icon: PawPrint },
-          { title: 'Vacinação', url: '/fazenda/vacinacao', icon: CalendarDays },
-          { title: 'Eventos', url: '/fazenda/eventos', icon: ClipboardList },
+          { title: 'Vacinação', url: '/fazenda/vacinacao', icon: Syringe },
+          { title: 'Eventos', url: '/fazenda/eventos', icon: Calendar },
+          { title: 'Desempenho', url: '/fazenda/desempenho', icon: TrendingUp },
           { title: 'Estoque', url: '/fazenda/estoque', icon: Package },
           { title: 'Equipe', url: '/fazenda/team', icon: Users },
         ];

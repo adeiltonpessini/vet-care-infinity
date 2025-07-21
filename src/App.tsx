@@ -65,6 +65,8 @@ import FazendaEstoque from '@/pages/fazenda/FazendaEstoque';
 import FazendaTeam from '@/pages/fazenda/FazendaTeam';
 import FazendaCadastroAnimal from '@/pages/fazenda/FazendaCadastroAnimal';
 import CartaoVacinacao from '@/pages/fazenda/CartaoVacinacao';
+import FazendaDesempenho from '@/pages/fazenda/FazendaDesempenho';
+import NovoDesempenho from '@/pages/fazenda/NovoDesempenho';
 
 import NotFound from "./pages/NotFound";
 
@@ -206,6 +208,8 @@ const App = () => (
               <Route path="/fazenda/vacinacao/cartao/:animalId" element={<ProtectedRoute><CartaoVacinacao /></ProtectedRoute>} />
               <Route path="/fazenda/eventos" element={<ProtectedRoute><FazendaEventos /></ProtectedRoute>} />
               <Route path="/fazenda/eventos/new" element={<ProtectedRoute><NovoEvento /></ProtectedRoute>} />
+              <Route path="/fazenda/desempenho" element={<ProtectedRoute><FazendaDesempenho /></ProtectedRoute>} />
+              <Route path="/fazenda/desempenho/new" element={<ProtectedRoute><NovoDesempenho /></ProtectedRoute>} />
               <Route path="/fazenda/estoque" element={<ProtectedRoute><FazendaEstoque /></ProtectedRoute>} />
               <Route path="/fazenda/team" element={<ProtectedRoute><FazendaTeam /></ProtectedRoute>} />
 
