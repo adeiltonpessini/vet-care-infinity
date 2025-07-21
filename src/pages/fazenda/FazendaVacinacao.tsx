@@ -206,12 +206,14 @@ export default function FazendaVacinacao() {
                 )}
 
                 <div className="flex gap-2 pt-2">
-                  <Button size="sm" variant="outline" className="flex-1">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Agendar Reforço
+                  <Button size="sm" variant="outline" className="flex-1" asChild>
+                    <Link to={`/fazenda/vacinacao/cartao/${vaccination.animal_id}`}>
+                      <FileText className="h-4 w-4 mr-1" />
+                      Ver Cartão
+                    </Link>
                   </Button>
                   <Button size="sm" variant="outline">
-                    <FileText className="h-4 w-4" />
+                    <Calendar className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
