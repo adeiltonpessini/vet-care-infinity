@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/lib/auth-context';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -17,12 +19,16 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface Notification {
   id: string;
-  type: 'low_stock' | 'vaccine_due' | 'appointment' | 'prescription';
+  kind: 'estoque' | 'vacinacao';
+  severity: 'critical' | 'warning';
   title: string;
   message: string;
   created_at: string;
-  animal_name?: string;
-  product_name?: string;
+  due_date?: string;
+  meta?: {
+    animal_name?: string;
+    product_name?: string;
+  };
 }
 
 export function Header() {
@@ -66,82 +72,84 @@ export function Header() {
 
   const loadNotifications = async () => {
     try {
-      const notifications: Notification[] = [];
+      const items: Notification[] = [];
 
-      // Verificar estoque baixo
+      const today = new Date();
+      const in7 = new Date(); in7.setDate(in7.getDate() + 7);
+      const in30 = new Date(); in30.setDate(in30.getDate() + 30);
+
+      // Estoque: baixo e perto da validade
       const { data: stockData } = await supabase
         .from('estoque')
-        .select('nome, quantidade, alerta_minimo')
-        .limit(5);
+        .select('id, nome, quantidade, alerta_minimo, validade')
+        .limit(100);
 
-      // Filter client-side to compare numeric columns
-      const lowStock = stockData?.filter(item => 
-        item.quantidade <= item.alerta_minimo
-      ) || [];
-
-      if (lowStock.length > 0) {
-        lowStock.forEach(item => {
-          notifications.push({
-            id: `stock-${item.nome}`,
-            type: 'low_stock',
+      stockData?.forEach((s: any) => {
+        const qtyLow = Number(s.quantidade) <= Number(s.alerta_minimo);
+        const validade = s.validade ? new Date(s.validade) : null;
+        const nearExpiry = validade ? validade <= in30 : false;
+        if (qtyLow) {
+          items.push({
+            id: `stock-low-${s.id}`,
+            kind: 'estoque',
+            severity: 'critical',
             title: 'Estoque baixo',
-            message: `${item.nome} está com apenas ${item.quantidade} unidades (mínimo: ${item.alerta_minimo})`,
-            product_name: item.nome,
-            created_at: new Date().toISOString()
+            message: `${s.nome}: ${s.quantidade} (mínimo ${s.alerta_minimo})`,
+            created_at: new Date().toISOString(),
+            due_date: s.validade || undefined,
+            meta: { product_name: s.nome },
           });
-        });
-      }
+        }
+        if (nearExpiry) {
+          items.push({
+            id: `stock-expiry-${s.id}`,
+            kind: 'estoque',
+            severity: validade && validade < today ? 'critical' : 'warning',
+            title: 'Validade próxima',
+            message: `${s.nome} ${validade && validade < today ? 'vencido' : 'vence em'} ${s.validade}`,
+            created_at: new Date().toISOString(),
+            due_date: s.validade || undefined,
+            meta: { product_name: s.nome },
+          });
+        }
+      });
 
-      // Verificar vacinações pendentes (reforços vencidos ou próximos)
-      const nextWeek = new Date();
-      nextWeek.setDate(nextWeek.getDate() + 7);
-      
-      const { data: vaccinesDue } = await supabase
+      // Vacinas: reforços vencidos ou próximos 7 dias
+      const { data: vacs } = await supabase
         .from('vacinacoes')
-        .select('vacina, reforco_previsto, animais(nome)')
+        .select('id, vacina, reforco_previsto, animal_id')
         .not('reforco_previsto', 'is', null)
-        .lte('reforco_previsto', nextWeek.toISOString().split('T')[0])
-        .limit(5);
+        .lte('reforco_previsto', in7.toISOString().split('T')[0])
+        .limit(100);
 
-      if (vaccinesDue) {
-        vaccinesDue.forEach(vaccine => {
-          notifications.push({
-            id: `vaccine-${vaccine.reforco_previsto}`,
-            type: 'vaccine_due',
-            title: 'Vacinação pendente',
-            message: `Reforço de ${vaccine.vacina} vencendo em ${vaccine.reforco_previsto}`,
-            animal_name: vaccine.animais?.nome,
-            created_at: new Date().toISOString()
-          });
-        });
+      const animalIds = Array.from(new Set((vacs || []).map((v: any) => v.animal_id).filter(Boolean)));
+      let animalMap: Record<string, string> = {};
+      if (animalIds.length > 0) {
+        const { data: animals } = await supabase
+          .from('animais')
+          .select('id, nome')
+          .in('id', animalIds as string[]);
+        animals?.forEach((a: any) => { animalMap[a.id] = a.nome; });
       }
 
-      // Verificar diagnósticos recentes (últimos 3 dias)
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-      const { data: recentDiagnostics } = await supabase
-        .from('diagnosticos')
-        .select('tipo, descricao, animais(nome), created_at')
-        .gte('created_at', threeDaysAgo.toISOString())
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (recentDiagnostics) {
-        recentDiagnostics.forEach(diagnostic => {
-          notifications.push({
-            id: `diagnostic-${diagnostic.created_at}`,
-            type: 'prescription',
-            title: 'Novo diagnóstico',
-            message: `${diagnostic.tipo} para ${diagnostic.animais?.nome}`,
-            animal_name: diagnostic.animais?.nome,
-            created_at: diagnostic.created_at
-          });
+      vacs?.forEach((v: any) => {
+        const due = v.reforco_previsto;
+        const dueDate = due ? new Date(due) : null;
+        const severity: 'critical' | 'warning' = dueDate && dueDate < today ? 'critical' : 'warning';
+        items.push({
+          id: `vac-${v.id}`,
+          kind: 'vacinacao',
+          severity,
+          title: 'Reforço de vacina',
+          message: `${v.vacina} ${severity === 'critical' ? 'atrasado' : 'previsto'} para ${v.reforco_previsto}${v.animal_id ? ` • Animal: ${animalMap[v.animal_id] || ''}` : ''}`,
+          created_at: new Date().toISOString(),
+          due_date: v.reforco_previsto || undefined,
+          meta: { animal_name: v.animal_id ? animalMap[v.animal_id] : undefined },
         });
-      }
+      });
 
-      setNotifications(notifications);
-      setNotificationCount(notifications.length);
+      setNotifications(items);
+      setNotificationCount(items.length);
     } catch (error) {
       console.error('Erro ao carregar notificações:', error);
     }
